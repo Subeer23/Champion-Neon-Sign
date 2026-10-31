@@ -12,11 +12,13 @@ interface Props extends Omit<PressableProps, 'children' | 'style'> {
   label: string;
   variant?: 'primary' | 'secondary';
   loading?: boolean;
+  compact?: boolean;
 }
 export function Button({
   label,
   variant = 'primary',
   loading = false,
+  compact = false,
   disabled,
   ...props
 }: Props) {
@@ -28,6 +30,7 @@ export function Button({
       disabled={disabled || loading}
       style={({ pressed }) => [
         styles.base,
+        compact && styles.compact,
         styles[variant],
         (pressed || disabled || loading) && styles.dimmed,
       ]}
@@ -59,6 +62,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
   },
+  compact: { minHeight: 44, paddingHorizontal: 12, paddingVertical: 8 },
   primary: { backgroundColor: colors.primary },
   secondary: {
     backgroundColor: colors.surface,

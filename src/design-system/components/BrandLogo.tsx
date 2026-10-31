@@ -1,14 +1,20 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type ImageStyle, type StyleProp } from 'react-native';
 import { images } from '../../assets/images';
 import { BrandImage } from './BrandImage';
-export function BrandLogo({ large = false }: { large?: boolean }) {
+export function BrandLogo({
+  large = false,
+  style,
+}: {
+  large?: boolean;
+  style?: StyleProp<ImageStyle>;
+}) {
   return (
     <BrandImage
       source={images.logo}
       accessibilityLabel="Champion Group"
       resizeMode="contain"
-      style={large ? styles.large : styles.logo}
+      style={[large ? styles.large : styles.logo, style]}
     />
   );
 }

@@ -7,19 +7,18 @@ import {
 } from 'react-native';
 import { BrandImage } from '../../../design-system/components/BrandImage';
 import { AppText } from '../../../design-system/components';
+import { radii, spacing } from '../../../design-system/tokens/spacing';
 import { colors } from '../../../design-system/tokens/colors';
 export function ShowcaseCard({
   title,
   subtitle,
   image,
   onPress,
-  compact = false,
 }: {
   title: string;
   subtitle: string;
   image: ImageSourcePropType;
   onPress: () => void;
-  compact?: boolean;
 }) {
   return (
     <Pressable
@@ -32,12 +31,14 @@ export function ShowcaseCard({
         source={image}
         accessibilityLabel={title}
         resizeMode="cover"
-        style={[styles.image, compact && styles.compact]}
+        style={styles.image}
       />
       <View style={styles.body}>
         <View style={styles.copy}>
-          <AppText variant="heading">{title}</AppText>
-          <AppText variant="caption" muted>
+          <AppText variant="heading" style={styles.title}>
+            {title}
+          </AppText>
+          <AppText muted style={styles.description}>
             {subtitle}
           </AppText>
         </View>
@@ -51,15 +52,23 @@ export function ShowcaseCard({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 18,
+    borderRadius: radii.md,
+    flex: 1,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
   },
-  pressed: { opacity: 0.8 },
-  image: { width: '100%', height: 210 },
-  compact: { height: 140 },
-  body: { padding: 18, gap: 12, flexDirection: 'row', alignItems: 'center' },
-  copy: { flex: 1, gap: 4 },
-  arrow: { color: colors.primary, fontSize: 26 },
+  pressed: { opacity: 0.88, borderColor: colors.primary },
+  image: { width: '100%', aspectRatio: 16 / 10 },
+  title: { fontSize: 19, lineHeight: 27 },
+  description: { fontSize: 14, lineHeight: 22 },
+  body: {
+    padding: spacing.md,
+    gap: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  copy: { flex: 1, gap: spacing.sm },
+  arrow: { color: colors.primary, fontSize: 24, lineHeight: 27 },
 });

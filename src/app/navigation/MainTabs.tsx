@@ -1,4 +1,5 @@
 import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import {
   createBottomTabNavigator,
   type BottomTabHeaderProps,
@@ -7,6 +8,7 @@ import {
 import type { RouteProp } from '@react-navigation/native';
 import { Header } from '../../design-system/components';
 import { colors } from '../../design-system/tokens/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { typography } from '../../design-system/tokens/typography';
 import { HomeScreen } from '../../features/home/screens/HomeScreen';
 import { SolutionsScreen } from '../../features/solutions/screens/SolutionsScreen';
@@ -29,19 +31,35 @@ function screenOptions({
     header: TabHeader,
     tabBarActiveTintColor: colors.primary,
     tabBarInactiveTintColor: colors.muted,
-    tabBarLabelStyle: typography.caption,
+    tabBarLabelPosition: 'below-icon',
+    tabBarLabelStyle: {
+      ...typography.caption,
+      fontFamily: 'Manrope-SemiBold',
+      fontSize: 11,
+      lineHeight: 16,
+    },
+    tabBarItemStyle: { paddingVertical: 5 },
     tabBarIcon: ({ color, size }) => (
       <TabIcon name={route.name} color={color} size={size} />
     ),
-    tabBarStyle: {
-      backgroundColor: colors.surface,
-      borderTopColor: colors.border,
-    },
   };
 }
 export function MainTabs() {
+  const insets = useSafeAreaInsets();
+  const { fontScale } = useWindowDimensions();
   return (
-    <Tabs.Navigator screenOptions={screenOptions}>
+    <Tabs.Navigator
+      screenOptions={props => ({
+        ...screenOptions(props),
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          height: 44 + 16 * Math.max(1, fontScale) + insets.bottom,
+          paddingBottom: insets.bottom,
+          elevation: 0,
+        },
+      })}
+    >
       <Tabs.Screen
         name="Home"
         component={HomeScreen}

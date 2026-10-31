@@ -45,5 +45,5 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
-  title: { flexGrow: 1, flexShrink: 1 },
+  title: { flexGrow: 1, flexShrink: 1, fontSize: 25, lineHeight: 33 },
 });
