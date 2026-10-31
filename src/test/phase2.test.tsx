@@ -5,6 +5,9 @@ import { Button } from '../design-system/components';
 import { SplashScreen } from '../features/onboarding/screens/SplashScreen';
 import { OnboardingScreen } from '../features/onboarding/screens/OnboardingScreen';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
+import { SolutionDetailsScreen } from '../features/solutions/screens/SolutionDetailsScreen';
+import { ProjectDetailsScreen } from '../features/projects/screens/ProjectDetailsScreen';
+import { GetQuoteScreen } from '../features/quote/screens/GetQuoteScreen';
 import { ShowcaseCard } from '../features/home/components/ShowcaseCard';
 import {
   AboutUsScreen,
@@ -150,6 +153,50 @@ describe('Phase 2 launch and Home experience', () => {
     ] as const) {
       await press(label);
       expect(renderer.root.findByType(component)).toBeDefined();
+      await press('Back');
+    }
+  });
+  it('opens every featured card and all quotation buttons from Home', async () => {
+    await mount(
+      createTestStore({ preferences: createMemoryPreferences(true) }),
+    );
+    const cards = renderer.root.findAllByType(ShowcaseCard);
+    expect(cards).toHaveLength(5);
+    const titles = cards.map(card => card.props.title);
+    for (const [index, title] of titles.entries()) {
+      const card = renderer.root.findAllByType(ShowcaseCard)[index]!;
+      await act(async () => {
+        card.props.onPress();
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const detail = renderer.root.findByType(
+        index < 3 ? SolutionDetailsScreen : ProjectDetailsScreen,
+      );
+      expect(detail).toBeDefined();
+      expect(JSON.stringify(renderer.toJSON())).toContain(title);
+      await press('Back');
+    }
+    const quoteButtons = renderer.root
+      .findAllByType(Button)
+      .filter(button =>
+        ['Get a quote', 'Start your project'].includes(button.props.label),
+      );
+    expect(quoteButtons).toHaveLength(3);
+    for (let index = 0; index < 3; index++) {
+      const button = renderer.root
+        .findAllByType(Button)
+        .filter(item =>
+          ['Get a quote', 'Start your project'].includes(item.props.label),
+        )[index]!;
+      await act(async () => {
+        button.props.onPress();
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      expect(renderer.root.findByType(GetQuoteScreen)).toBeDefined();
       await press('Back');
     }
   });

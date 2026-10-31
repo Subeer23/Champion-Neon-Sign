@@ -1,13 +1,24 @@
-import React, { type PropsWithChildren } from 'react';
+import React, { useContext, type PropsWithChildren } from 'react';
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../design-system/tokens/colors';
 import { spacing } from '../../design-system/tokens/spacing';
 export function Screen({ children }: PropsWithChildren) {
+  const tabBarHeight = useContext(BottomTabBarHeightContext);
   return (
-    <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView
+      style={styles.safe}
+      edges={
+        tabBarHeight === undefined
+          ? ['left', 'right', 'bottom']
+          : ['left', 'right']
+      }
+    >
       <ScrollView
         keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
         contentContainerStyle={styles.content}
       >
         {children}

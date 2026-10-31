@@ -5,7 +5,10 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import type { TabScreenProps } from '../../../app/navigation/types';
@@ -13,6 +16,7 @@ import { AppText, Button } from '../../../design-system/components';
 import { BrandLogo } from '../../../design-system/components/BrandLogo';
 import { BrandImage } from '../../../design-system/components/BrandImage';
 import { FadeIn } from '../../../design-system/components/FadeIn';
+import { radii, spacing } from '../../../design-system/tokens/spacing';
 import { colors } from '../../../design-system/tokens/colors';
 import { images } from '../../../assets/images';
 import { useGetSolutionsQuery } from '../../solutions/state/solutionsApi';
@@ -28,8 +32,14 @@ import {
   projectImages,
 } from '../data/homeContent';
 export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
-  const { width } = useWindowDimensions();
-  const wide = width >= 680;
+  const { width, fontScale } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const availableWidth = Math.min(width - insets.left - insets.right, 1100);
+  const wide = availableWidth / fontScale >= 680;
+  const cardWidth =
+    (availableWidth - 40 - spacing.md * (wide ? 2 : 0)) / (wide ? 3 : 1);
+  const projectWidth =
+    (availableWidth - 40 - (wide ? spacing.md : 0)) / (wide ? 2 : 1);
   const solutions = useGetSolutionsQuery();
   const projects = useGetProjectsQuery();
   const focused = useIsFocused();
@@ -37,9 +47,16 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
     <View style={styles.screen}>
       {focused && <StatusBar barStyle="light-content" />}
       <SafeAreaView edges={['top', 'left', 'right']} style={styles.top}>
-        <View style={styles.header}>
-          <BrandLogo />
+        <View
+          style={[
+            styles.header,
+            (fontScale > 1.4 || availableWidth / fontScale < 300) &&
+              styles.headerLargeText,
+          ]}
+        >
+          <BrandLogo style={styles.headerLogo} />
           <Button
+            compact
             label="Get a quote"
             onPress={() => navigation.navigate('GetQuote')}
           />
@@ -48,6 +65,8 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
       <SafeAreaView edges={['left', 'right']} style={styles.scrollArea}>
         <ScrollView
           showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustContentInsets={false}
           contentContainerStyle={styles.scroll}
         >
           <FadeIn style={styles.content}>
@@ -64,7 +83,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                   accessibilityRole="header"
                   style={[styles.heroTitle, wide && styles.heroTitleWide]}
                 >
-                  Make your brand{'\n'}impossible to miss.
+                  Make your brand impossible to miss.
                 </AppText>
                 <AppText style={styles.heroDescription}>
                   Signage, digital displays and spaces that bring your identity
@@ -87,7 +106,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 eyebrow="WELCOME TO CHAMPION GROUP"
                 title="Ideas made visible."
               />
-              <AppText muted>
+              <AppText muted style={styles.paragraph}>
                 We design and build signage and visual communication solutions
                 in the UAE. From the first concept to installation, our work
                 connects your brand with the world around it.
@@ -111,9 +130,8 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
               />
               <View style={styles.grid}>
                 {solutions.data?.slice(0, 3).map(item => (
-                  <View key={item.id} style={wide ? styles.third : styles.full}>
+                  <View key={item.id} style={{ width: cardWidth }}>
                     <ShowcaseCard
-                      compact
                       title={item.title}
                       subtitle={item.summary}
                       image={solutionImages[item.id] ?? images.experience}
@@ -137,7 +155,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
               <AppText
                 variant="title"
                 accessibilityRole="header"
-                style={styles.white}
+                style={[styles.white, styles.sectionTitle]}
               >
                 One vision.{'\n'}Many possibilities.
               </AppText>
@@ -145,10 +163,15 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 <View key={item.number} style={styles.expertiseRow}>
                   <AppText style={styles.number}>{item.number}</AppText>
                   <View style={styles.flex}>
-                    <AppText variant="heading" style={styles.white}>
+                    <AppText
+                      variant="heading"
+                      style={[styles.white, styles.itemTitle]}
+                    >
                       {item.title}
                     </AppText>
-                    <AppText style={styles.light}>{item.detail}</AppText>
+                    <AppText style={[styles.light, styles.paragraph]}>
+                      {item.detail}
+                    </AppText>
                   </View>
                 </View>
               ))}
@@ -158,7 +181,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 eyebrow="OUR WORK"
                 title="See the possibilities."
               />
-              <AppText muted>
+              <AppText muted style={styles.paragraph}>
                 Explore selected showcases from Champion Group.
               </AppText>
               <QueryState
@@ -169,10 +192,10 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
               />
               <View style={styles.grid}>
                 {projects.data?.slice(0, 2).map(item => (
-                  <View key={item.id} style={wide ? styles.half : styles.full}>
+                  <View key={item.id} style={{ width: projectWidth }}>
                     <ShowcaseCard
                       title={item.title}
-                      subtitle="CHAMPION GROUP / SHOWCASE"
+                      subtitle={item.summary}
                       image={projectImages[item.id] ?? images.exhibition}
                       onPress={() =>
                         navigation.navigate('ProjectDetails', {
@@ -195,13 +218,23 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 title="Craft. Care. Commitment."
               />
               {reasons.map((item, i) => (
-                <View style={styles.reason} key={item.title}>
+                <View
+                  style={[
+                    styles.reason,
+                    i === reasons.length - 1 && styles.lastReason,
+                  ]}
+                  key={item.title}
+                >
                   <View style={styles.reasonNumber}>
                     <AppText style={styles.reasonDigit}>{`0${i + 1}`}</AppText>
                   </View>
                   <View style={styles.flex}>
-                    <AppText variant="heading">{item.title}</AppText>
-                    <AppText muted>{item.detail}</AppText>
+                    <AppText variant="heading" style={styles.itemTitle}>
+                      {item.title}
+                    </AppText>
+                    <AppText muted style={styles.paragraph}>
+                      {item.detail}
+                    </AppText>
                   </View>
                 </View>
               ))}
@@ -210,7 +243,13 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
               <SectionHeading eyebrow="OUR CLIENTS" title="In good company." />
               <View style={styles.clients}>
                 {clientPreview.map(client => (
-                  <View key={client.name} style={styles.client}>
+                  <View
+                    key={client.name}
+                    style={[
+                      styles.client,
+                      { width: (availableWidth - 40 - spacing.sm * 2) / 3 },
+                    ]}
+                  >
                     <BrandImage
                       accessibilityLabel={client.name}
                       source={client.image}
@@ -237,15 +276,17 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 Tell us what you have in mind. Let’s explore the possibilities
                 together.
               </AppText>
-              <Button
-                label="Get a quote"
-                onPress={() => navigation.navigate('GetQuote')}
-              />
-              <Button
-                label="Contact our team"
-                variant="secondary"
-                onPress={() => navigation.navigate('ContactUs')}
-              />
+              <View style={styles.contactActions}>
+                <Button
+                  label="Get a quote"
+                  onPress={() => navigation.navigate('GetQuote')}
+                />
+                <Button
+                  label="Contact our team"
+                  variant="secondary"
+                  onPress={() => navigation.navigate('ContactUs')}
+                />
+              </View>
               <AppText variant="caption" style={styles.light}>
                 Dubai Investments Park 2 · UAE
               </AppText>
@@ -263,24 +304,30 @@ const styles = StyleSheet.create({
   scrollArea: { flex: 1 },
   screen: { flex: 1, backgroundColor: colors.background },
   top: { backgroundColor: colors.dark },
+  headerLogo: { width: 124, height: 52 },
+  headerLargeText: { flexDirection: 'column', alignItems: 'stretch' },
   header: {
-    paddingHorizontal: 24,
-    paddingVertical: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 6,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 16,
+    gap: 12,
     maxWidth: 1100,
     width: '100%',
     alignSelf: 'center',
   },
-  scroll: { paddingBottom: 24 },
-  content: { gap: 36, width: '100%', maxWidth: 1100, alignSelf: 'center' },
+  scroll: { paddingBottom: 12 },
+  content: { gap: 28, width: '100%', maxWidth: 1100, alignSelf: 'center' },
   hero: { backgroundColor: colors.dark },
-  heroImage: { height: 220, width: '100%' },
-  heroImageWide: { height: 340 },
-  heroCopy: { padding: 28, gap: 20 },
+  heroImage: { aspectRatio: 1.8, width: '100%' },
+  heroImageWide: { aspectRatio: 2.6 },
+  heroCopy: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 24,
+    gap: 14,
+  },
   kicker: {
     fontFamily: 'Manrope-Bold',
     fontSize: 10,
@@ -289,12 +336,17 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontFamily: 'Manrope-Bold',
-    fontSize: 34,
-    lineHeight: 43,
+    fontSize: 30,
+    lineHeight: 37,
     color: colors.onDark,
   },
   heroTitleWide: { fontSize: 44, lineHeight: 54 },
-  heroDescription: { color: colors.mutedOnDark, maxWidth: 550 },
+  heroDescription: {
+    color: colors.mutedOnDark,
+    maxWidth: 550,
+    fontSize: 15,
+    lineHeight: 23,
+  },
   heroFoot: {
     flexDirection: 'row',
     gap: 10,
@@ -304,22 +356,20 @@ const styles = StyleSheet.create({
   redLine: { width: 24, height: 2, backgroundColor: colors.primary },
   light: { color: colors.mutedOnDark },
   white: { color: colors.onDark },
-  section: { marginHorizontal: 24, gap: 20 },
+  section: { marginHorizontal: 20, gap: 16 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-  full: { width: '100%' },
-  half: { width: '48%' },
-  third: { width: '31%' },
   expertise: {
     backgroundColor: colors.dark,
-    marginHorizontal: 16,
-    padding: 28,
-    borderRadius: 24,
-    gap: 24,
+    marginHorizontal: 20,
+    padding: 20,
+    borderRadius: radii.md,
+    gap: 20,
   },
   expertiseRow: {
     flexDirection: 'row',
-    gap: 20,
-    paddingTop: 20,
+    gap: spacing.md,
+    alignItems: 'flex-start',
+    paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.borderDark,
   },
@@ -327,8 +377,13 @@ const styles = StyleSheet.create({
     color: colors.accentOnDark,
     fontFamily: 'Manrope-SemiBold',
     fontSize: 13,
+    lineHeight: 26,
+    minWidth: 24,
   },
-  flex: { flex: 1, gap: 8 },
+  paragraph: { fontSize: 15, lineHeight: 24, maxWidth: 640 },
+  sectionTitle: { fontSize: 25, lineHeight: 33 },
+  itemTitle: { fontSize: 18, lineHeight: 26 },
+  flex: { flex: 1, gap: spacing.xs },
   reason: {
     flexDirection: 'row',
     gap: 16,
@@ -337,32 +392,35 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   reasonNumber: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    minWidth: 32,
+    minHeight: 32,
+    paddingHorizontal: 6,
+    borderRadius: radii.sm,
     backgroundColor: colors.primarySubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
   reasonDigit: { color: colors.primaryStrong, fontFamily: 'Manrope-Bold' },
-  clients: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  lastReason: { borderBottomWidth: 0, paddingBottom: 0 },
+  clients: { flexDirection: 'row', gap: spacing.sm },
   client: {
-    flexGrow: 1,
-    flexBasis: 120,
+    height: 88,
     backgroundColor: colors.onDark,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: radii.sm,
+    padding: spacing.sm,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  clientLogo: { width: 110, height: 56 },
+  clientLogo: { width: '100%', maxWidth: 110, height: 48 },
+  contactActions: { gap: spacing.sm },
   contact: {
     backgroundColor: colors.dark,
-    padding: 28,
-    marginHorizontal: 16,
-    borderRadius: 24,
+    padding: 20,
+    marginHorizontal: 20,
+    borderRadius: radii.md,
     gap: 20,
   },
-  footer: { textAlign: 'center', letterSpacing: 1 },
+  footer: { textAlign: 'center', letterSpacing: 0.6, paddingHorizontal: 20 },
 });
