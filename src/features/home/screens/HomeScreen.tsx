@@ -129,20 +129,24 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 onRetry={solutions.refetch}
               />
               <View style={styles.grid}>
-                {solutions.data?.slice(0, 3).map(item => (
-                  <View key={item.id} style={{ width: cardWidth }}>
-                    <ShowcaseCard
-                      title={item.title}
-                      subtitle={item.summary}
-                      image={solutionImages[item.id] ?? images.experience}
-                      onPress={() =>
-                        navigation.navigate('SolutionDetails', {
-                          solutionId: item.id,
-                        })
-                      }
-                    />
-                  </View>
-                ))}
+                {solutions.data
+                  ?.filter(item =>
+                    ['signage', 'branding', 'led-screens'].includes(item.id),
+                  )
+                  .map(item => (
+                    <View key={item.id} style={{ width: cardWidth }}>
+                      <ShowcaseCard
+                        title={item.title}
+                        subtitle={item.summary}
+                        image={solutionImages[item.id] ?? images.experience}
+                        onPress={() =>
+                          navigation.navigate('SolutionDetails', {
+                            solutionId: item.id,
+                          })
+                        }
+                      />
+                    </View>
+                  ))}
               </View>
               <Button
                 label="Explore solutions"

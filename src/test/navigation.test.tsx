@@ -39,12 +39,36 @@ describe('real navigation tree', () => {
     });
   });
   async function press(label: string) {
+    if (label === 'Back') {
+      await act(async () => {
+        renderer.root
+          .findAllByProps({ accessibilityLabel: 'Go back' })[0]!
+          .props.onPress();
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      return;
+    }
+
     const buttons = renderer.root
       .findAllByType(Button)
       .filter(button => button.props.label === label);
     const button = buttons[buttons.length - 1];
     if (!button) {
-      throw new Error(`Missing button: ${label}`);
+      const target = renderer.root.findAllByProps({
+        accessibilityLabel: label,
+      })[0];
+      if (!target) {
+        throw new Error(`Missing action: ${label}`);
+      }
+      await act(async () => {
+        target.props.onPress();
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      return;
     }
     await act(async () => {
       button.props.onPress();

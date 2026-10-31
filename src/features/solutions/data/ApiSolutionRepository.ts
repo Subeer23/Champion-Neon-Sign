@@ -6,6 +6,8 @@ const schema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
   summary: z.string(),
+  imageId: z.string().optional(),
+  sourceUrl: z.string().url().optional(),
 });
 /** Proposed API contract only; endpoints must be agreed before enabling API mode. */
 export class ApiSolutionRepository implements SolutionRepository {

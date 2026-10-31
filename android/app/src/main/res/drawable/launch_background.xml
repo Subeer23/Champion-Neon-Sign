@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item><shape><solid android:color="#171717" /></shape></item>
-    <item android:width="240dp" android:height="102dp" android:gravity="center">
+    <item android:width="240dp" android:height="101.333dp" android:gravity="center">
         <bitmap android:src="@drawable/champion_logo" android:gravity="fill" />
+    </item>
+    <item android:width="48dp" android:height="2dp" android:gravity="center" android:top="160dp">
+        <shape><solid android:color="#D71D24" /></shape>
+    </item>
+    <item android:width="1dp" android:height="96dp" android:gravity="top|right" android:top="64dp" android:right="40dp">
+        <shape><solid android:color="#393939" /></shape>
+    </item>
+    <item android:width="96dp" android:height="1dp" android:gravity="top|right" android:top="64dp" android:right="40dp">
+        <shape><solid android:color="#393939" /></shape>
     </item>
 </layer-list>

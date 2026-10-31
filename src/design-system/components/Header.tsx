@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../tokens/colors';
 import { spacing } from '../tokens/spacing';
 import { AppText } from './AppText';
-import { Button } from './Button';
+import { IconButton } from '../../shared/components/IconButton';
 export function Header({
   title,
   onBack,
@@ -15,14 +15,7 @@ export function Header({
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.surface}>
       <View style={styles.row}>
-        {onBack && (
-          <Button
-            label="Back"
-            accessibilityLabel="Go back"
-            variant="secondary"
-            onPress={onBack}
-          />
-        )}
+        {onBack && <IconButton label="Go back" onPress={onBack} />}
         <AppText
           variant="heading"
           accessibilityRole="header"
@@ -37,10 +30,10 @@ export function Header({
 const styles = StyleSheet.create({
   surface: { backgroundColor: colors.surface },
   row: {
-    minHeight: 64,
+    minHeight: 60,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,

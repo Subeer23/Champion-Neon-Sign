@@ -32,6 +32,18 @@ describe('Phase 2 launch and Home experience', () => {
     });
   }
   async function press(label: string) {
+    if (label === 'Back') {
+      await act(async () => {
+        renderer.root
+          .findAllByProps({ accessibilityLabel: 'Go back' })[0]!
+          .props.onPress();
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      return;
+    }
+
     const matches = renderer.root
       .findAllByType(Button)
       .filter(button => button.props.label === label);

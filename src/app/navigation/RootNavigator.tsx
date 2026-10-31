@@ -74,7 +74,11 @@ export function RootNavigator() {
       <Stack.Screen
         name="GalleryViewer"
         component={GalleryViewerScreen}
-        options={{ title: 'Gallery', presentation: 'modal' }}
+        options={{
+          title: 'Gallery',
+          presentation: 'fullScreenModal',
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );

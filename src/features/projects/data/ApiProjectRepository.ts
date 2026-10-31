@@ -6,6 +6,8 @@ const schema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
   summary: z.string(),
+  description: z.string().optional(),
+  sourceUrl: z.string().url().optional(),
   solutionIds: z.array(z.string()),
   imageIds: z.array(z.string()),
 });

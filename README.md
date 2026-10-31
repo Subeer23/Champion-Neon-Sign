@@ -4,8 +4,10 @@ React Native CLI 0.88.1 / React 19.3.0, with a strict TypeScript foundation.
 
 Phase 2 adds branded launch screens, persisted onboarding, and a complete corporate
 Home experience over the Phase 1 repositories, RTK Query, and design system.
-The app uses local mocks and makes no application API requests. Remaining business
-screens and quotation submission await Phase 3 approval.
+Phase 3 adds all 16 solutions, four portfolio showcases, galleries, About, Clients,
+testimonials, FAQs and contact actions using audited website content. The app uses
+local mocks and bundled assets without application API requests. Quotation
+submission remains explicitly unfinished for Phase 4.
 
 ## Setup
 
@@ -31,6 +33,8 @@ npm test -- --runInBand --watchman=false
 
 ## Architecture
 
+See [the Phase 3 guide](docs/PHASE3.md) and [website audit](docs/WEBSITE_CONTENT_AUDIT.md)
+for source coverage, offline behavior, validation and limitations.
 See [the Phase 2 UI guide](docs/PHASE2.md) for the new experience and validation.
 See [the Phase 1 guide](docs/PHASE1.md) for folder ownership, dependency versions,
 repository injection, navigation, native adjustments, and validation results.
