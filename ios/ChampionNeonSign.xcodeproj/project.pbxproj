@@ -12,6 +12,9 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		761780EF2CA45674006654EF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EE2CA45674006654EF /* SceneDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C20000000000000000000000 /* Manrope-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000000 /* Manrope-Regular.ttf */; };
+		C20000000000000000000001 /* Manrope-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000001 /* Manrope-SemiBold.ttf */; };
+		C20000000000000000000002 /* Manrope-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000002 /* Manrope-Bold.ttf */; };
 		F5D68EAA22C2E1A1CCED802F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -26,6 +29,9 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ChampionNeonSign/AppDelegate.swift; sourceTree = "<group>"; };
 		761780EE2CA45674006654EF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = ChampionNeonSign/SceneDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ChampionNeonSign/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C10000000000000000000000 /* Manrope-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Manrope-Regular.ttf"; path = "../src/assets/fonts/Manrope-Regular.ttf"; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000001 /* Manrope-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Manrope-SemiBold.ttf"; path = "../src/assets/fonts/Manrope-SemiBold.ttf"; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000002 /* Manrope-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Manrope-Bold.ttf"; path = "../src/assets/fonts/Manrope-Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -44,6 +50,9 @@
 		13B07FAE1A68108700A75B9A /* ChampionNeonSign */ = {
 			isa = PBXGroup;
 			children = (
+				C10000000000000000000000 /* Manrope-Regular.ttf */,
+				C10000000000000000000001 /* Manrope-SemiBold.ttf */,
+				C10000000000000000000002 /* Manrope-Bold.ttf */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				761780EE2CA45674006654EF /* SceneDelegate.swift */,
@@ -162,6 +171,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				C20000000000000000000000 /* Manrope-Regular.ttf in Resources */,
+				C20000000000000000000001 /* Manrope-SemiBold.ttf in Resources */,
+				C20000000000000000000002 /* Manrope-Bold.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				F5D68EAA22C2E1A1CCED802F /* PrivacyInfo.xcprivacy in Resources */,
 			);

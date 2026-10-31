@@ -5,9 +5,19 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import App from '../App';
+import { createTestStore } from '../src/test/createTestStore';
+import { HomeScreen } from '../src/features/home/screens/HomeScreen';
+import { rootApi } from '../src/app/store/rootApi';
 
 test('renders correctly', async () => {
+  const store = createTestStore();
+  let renderer: ReactTestRenderer.ReactTestRenderer;
   await ReactTestRenderer.act(() => {
-    ReactTestRenderer.create(<App />);
+    renderer = ReactTestRenderer.create(<App store={store} />);
+  });
+  expect(renderer!.root.findByType(HomeScreen)).toBeDefined();
+  await ReactTestRenderer.act(() => {
+    renderer!.unmount();
+    store.dispatch(rootApi.util.resetApiState());
   });
 });

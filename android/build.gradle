@@ -5,7 +5,8 @@ buildscript {
         compileSdkVersion = 37
         targetSdkVersion = 36
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.2.0"
+        // Align AsyncStorage 3's KSP selection with the resolved Kotlin plugin.
+        kotlinVersion = "2.2.10"
     }
     repositories {
         google()
