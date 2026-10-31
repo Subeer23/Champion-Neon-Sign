@@ -18,13 +18,13 @@ import { ContactUsScreen } from '../features/contact/screens/ContactUsScreen';
 import { GetQuoteScreen } from '../features/quote/screens/GetQuoteScreen';
 import type { TabScreenProps, RootScreenProps } from '../app/navigation/types';
 import { rootApi } from '../app/store/rootApi';
-import { createTestStore } from './createTestStore';
+import { createTestStore, createMemoryPreferences } from './createTestStore';
 
 describe('real navigation tree', () => {
   let renderer: ReactTestRenderer;
   let store: ReturnType<typeof createTestStore>;
   beforeEach(async () => {
-    store = createTestStore();
+    store = createTestStore({ preferences: createMemoryPreferences(true) });
     await act(() => {
       renderer = Renderer.create(<App store={store} />);
     });

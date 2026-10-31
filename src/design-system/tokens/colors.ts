@@ -7,4 +7,12 @@ export const colors = {
   text: '#171717',
   muted: '#595959',
   onPrimary: '#FFFFFF',
+  onDark: '#FFFFFF',
+  mutedOnDark: '#CFCFCF',
+  accentOnDark: '#F08488',
+  primaryStrong: '#A0151B',
+  primarySubtle: '#FBEAED',
+  borderDark: '#393939',
+  inactiveOnDark: '#666666',
+  scrim: '#171717E6',
 } as const;

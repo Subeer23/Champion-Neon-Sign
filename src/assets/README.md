@@ -10,4 +10,6 @@ The original TTFs are in `fonts/`. Android's matching copies live in
 Resources phase and registers their filenames in `UIAppFonts`. Preserve the
 PostScript names used by the typography tokens when replacing fonts.
 
-Portfolio images and logo variants are deferred to the approved content phase.
+Phase 2 official images are bundled in `images/`; `images/sources.json` records
+source URLs and optimization notes. The cropped official logo is also copied into
+Android launch drawables and the iOS ChampionLogo image set.

@@ -42,7 +42,11 @@ function screenOptions({
 export function MainTabs() {
   return (
     <Tabs.Navigator screenOptions={screenOptions}>
-      <Tabs.Screen name="Home" component={HomeScreen} />
+      <Tabs.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
       <Tabs.Screen name="Solutions" component={SolutionsScreen} />
       <Tabs.Screen name="Projects" component={ProjectsScreen} />
       <Tabs.Screen name="More" component={MoreScreen} />

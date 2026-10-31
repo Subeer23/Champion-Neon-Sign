@@ -1,0 +1,15 @@
+{
+  "verifiedOn": "2026-10-31",
+  "sourcePage": "https://championgroup.ae/",
+  "files": {
+    "logo.png": "https://championgroup.ae/wp-content/uploads/2025/07/Champion-Group-scaled.png",
+    "experience.png": "https://championgroup.ae/wp-content/uploads/2025/07/Capture-1024x524.png",
+    "branding.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/Passenger-Side.jpg",
+    "led.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2026-01-06-at-23.45.43-2-1024x576.jpeg",
+    "adnoc.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/Adnoc-logoFP-300x150.jpg",
+    "super-general.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/super-general-logo.jpg",
+    "exhibition.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27-1.webp",
+    "jumbo.png": "https://championgroup.ae/wp-content/uploads/2025/07/jumbo-electronics-uae.webp"
+  },
+  "processing": "Logo transparent margins trimmed, artwork unchanged. Photos resized to at most 1200px; WebP converted to JPEG/PNG for native launch and cross-platform consistency. Client identities visually verified against these assets."
+}

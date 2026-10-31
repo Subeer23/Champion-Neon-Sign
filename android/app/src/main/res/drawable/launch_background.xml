@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item><shape><solid android:color="#171717" /></shape></item>
+    <item android:width="240dp" android:height="102dp" android:gravity="center">
+        <bitmap android:src="@drawable/champion_logo" android:gravity="fill" />
+    </item>
+</layer-list>
