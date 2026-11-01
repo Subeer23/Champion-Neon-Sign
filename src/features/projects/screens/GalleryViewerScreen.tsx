@@ -106,9 +106,7 @@ export function GalleryViewerScreen({
                 accessibilityLabel={`${data?.title} image ${imageIndex + 1}`}
               />
               <AppText style={styles.caption}>
-                {item === 'events-illustration'
-                  ? 'Website-published illustration; not a verified event photograph.'
-                  : 'Official Champion Group website imagery'}
+                Champion Group · Project photography
               </AppText>
             </View>
           )}

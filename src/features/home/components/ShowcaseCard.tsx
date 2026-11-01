@@ -1,23 +1,18 @@
 import React from 'react';
-import {
-  Pressable,
-  View,
-  StyleSheet,
-  type ImageSourcePropType,
-} from 'react-native';
-import { BrandImage } from '../../../design-system/components/BrandImage';
+import { Pressable, View, StyleSheet } from 'react-native';
+import { ContentMedia } from '../../../shared/components/ContentMedia';
 import { AppText } from '../../../design-system/components';
 import { radii, spacing } from '../../../design-system/tokens/spacing';
 import { colors } from '../../../design-system/tokens/colors';
 export function ShowcaseCard({
   title,
   subtitle,
-  image,
+  imageId,
   onPress,
 }: {
   title: string;
   subtitle: string;
-  image: ImageSourcePropType;
+  imageId?: string;
   onPress: () => void;
 }) {
   return (
@@ -27,12 +22,7 @@ export function ShowcaseCard({
       onPress={onPress}
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
-      <BrandImage
-        source={image}
-        accessibilityLabel={title}
-        resizeMode="cover"
-        style={styles.image}
-      />
+      <ContentMedia imageId={imageId} title={title} />
       <View style={styles.body}>
         <View style={styles.copy}>
           <AppText variant="heading" style={styles.title}>
@@ -59,7 +49,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   pressed: { opacity: 0.88, borderColor: colors.primary },
-  image: { width: '100%', aspectRatio: 16 / 10 },
   title: { fontSize: 19, lineHeight: 27 },
   description: { fontSize: 14, lineHeight: 22 },
   body: {

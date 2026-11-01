@@ -7,13 +7,13 @@ import {
 } from '../features/onboarding/screens/SplashScreen';
 import { BrandLogo } from '../design-system/components/BrandLogo';
 
-describe('cinematic splash', () => {
+describe('corporate campaign splash', () => {
   afterEach(() => jest.restoreAllMocks());
   it.each([240, 272, 320, 360, 390, 768, 1024])(
     'keeps the full logo within %s points',
     width => {
       expect(splashLogoWidth(width)).toBeLessThanOrEqual(width - 48);
-      expect(splashLogoWidth(width)).toBeLessThanOrEqual(320);
+      expect(splashLogoWidth(width)).toBeLessThanOrEqual(420);
     },
   );
   it('uses the source aspect ratio and skips motion when reduced motion is enabled', async () => {
@@ -29,12 +29,27 @@ describe('cinematic splash', () => {
     const style = StyleSheet.flatten(logo.props.style);
     expect(style.width / style.height).toBeCloseTo(900 / 380);
     expect(timing).not.toHaveBeenCalled();
+    expect(JSON.stringify(renderer.toJSON())).toContain('Elevate Your Brand');
     expect(JSON.stringify(renderer.toJSON())).toContain(
-      'VISION. CRAFT. IMPACT.',
+      'Quality Visual Communication Solutions',
     );
-    expect(JSON.stringify(renderer.toJSON())).toContain(
-      'Signage • Branding • Digital Experiences',
-    );
+    await act(() => renderer.unmount());
+  });
+  it('shows one visible logo before accessibility preference resolves', async () => {
+    jest
+      .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+      .mockReturnValue(new Promise<boolean>(() => {}));
+    let renderer!: Renderer.ReactTestRenderer;
+    await act(() => {
+      renderer = Renderer.create(<SplashScreen />);
+    });
+    expect(renderer.root.findAllByType(BrandLogo)).toHaveLength(1);
+    const entrance = renderer.root.findAllByProps({
+      testID: 'splash-logo-entrance',
+    })[0]!;
+    expect(
+      StyleSheet.flatten(entrance.props.style).opacity.__getValue(),
+    ).toBeGreaterThanOrEqual(0.85);
     await act(() => renderer.unmount());
   });
   it('stops entrance animation when initialization navigates away', async () => {

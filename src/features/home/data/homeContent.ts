@@ -1,16 +1,4 @@
-import type { ImageSourcePropType } from 'react-native';
 import { images } from '../../../assets/images';
-// Verified against championgroup.ae. Photos depict published service showcases,
-// not independently documented client case studies.
-export const solutionImages: Record<string, ImageSourcePropType> = {
-  signage: images.experience,
-  branding: images.branding,
-  'led-screens': images.led,
-};
-export const projectImages: Record<string, ImageSourcePropType> = {
-  branding: images.branding,
-  'led-screens': images.led,
-};
 export const clientPreview = [
   { name: 'ADNOC', image: images.adnoc },
   { name: 'Super General', image: images.superGeneral },

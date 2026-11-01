@@ -11,5 +11,5 @@
     "exhibition.jpg": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27-1.webp",
     "jumbo.png": "https://championgroup.ae/wp-content/uploads/2025/07/jumbo-electronics-uae.webp"
   },
-  "processing": "Logo transparent margins trimmed, artwork unchanged. Photos resized to at most 1200px; WebP converted to JPEG/PNG for native launch and cross-platform consistency. Client identities visually verified against these assets."
+  "processing": "Logo transparent margins trimmed, artwork unchanged. Phase 3 polish: ten large JPEGs resized to at most 1024px and recompressed at quality 76 (2036394 to 1469173 bytes); remaining photos already at most 1024px; WebP converted to JPEG/PNG for native launch and cross-platform consistency. Client identities visually verified against these assets."
 }

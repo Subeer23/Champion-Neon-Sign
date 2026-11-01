@@ -53,7 +53,7 @@ export function Button({
 }
 const styles = StyleSheet.create({
   base: {
-    minHeight: 48,
+    minHeight: 52,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: radii.sm,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  primaryText: { color: colors.onPrimary },
-  secondaryText: { color: colors.dark },
+  primaryText: { color: colors.onPrimary, textAlign: 'center', flexShrink: 1 },
+  secondaryText: { color: colors.dark, textAlign: 'center', flexShrink: 1 },
   dimmed: { opacity: 0.65 },
 });

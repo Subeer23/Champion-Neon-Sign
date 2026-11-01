@@ -16,6 +16,7 @@ export type RootStackParamList = {
   ProjectDetails: { projectId: string };
   AboutUs: undefined;
   Clients: undefined;
+  Testimonials: undefined;
   FAQs: undefined;
   ContactUs: undefined;
   GetQuote: { solutionId?: string; projectId?: string } | undefined;

@@ -1,7 +1,7 @@
-import type { ImageKey } from '../assets/images';
 import originalAssets from '../assets/images/sources.json';
 import contentUpdateAssets from '../assets/images/content-update-sources.json';
 import phase3Assets from '../assets/images/phase3-sources.json';
+import visualSelections from '../assets/images/visual-selection-sources.json';
 import { companyContent } from './fixtures/company';
 import { solutionFixtures } from './fixtures/solutions';
 import { projectFixtures } from './fixtures/projects';
@@ -16,6 +16,16 @@ export interface ContentSource {
 const verifiedOn = '2026-10-31';
 const home = 'https://championgroup.ae/';
 export const sourceManifest: readonly ContentSource[] = [
+  ...visualSelections.map(item => ({
+    id: `visual-selection:${item.imageId}`,
+    sourceUrl: item.sourceUrl,
+    verifiedOn: item.verifiedOn,
+    assetIds: [item.imageId],
+    treatment: 'asset' as const,
+    note: `${item.note} Screens: ${item.screens.join(', ')}. Page: ${
+      item.pageUrl
+    }`,
+  })),
   ...companyContent.faqs.map(item => ({
     id: item.id,
     sourceUrl: `${home}#faqs`,
@@ -139,8 +149,8 @@ export const contentLimitations = {
   missingServiceImages: solutionFixtures
     .filter(item => !item.imageId)
     .map(item => item.id),
-  galleryIllustrations: ['events-illustration'] satisfies ImageKey[],
-  maps: 'Browser maps search derived from the official embedded map label: Champion Neon Headquarters, Dubai Investments Park 2.',
+  galleryIllustrations: [],
+  maps: 'Verified 2026-11-01: homepage embed feature 0x3e5f58126fb99783:0x944cdf610b8a58fd, Champion Neon Headquarters. Decimal CID 10686161623741782269. Contact page London Eye placeholder rejected; embed viewport coordinates are not used as a business pin.',
   testimonials:
     'Verbatim website quotations, including original spelling. Attribution is as published; no independent endorsement verification.',
 } as const;

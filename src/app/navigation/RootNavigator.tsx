@@ -11,6 +11,7 @@ import { GalleryViewerScreen } from '../../features/projects/screens/GalleryView
 import {
   AboutUsScreen,
   ClientsScreen,
+  TestimonialsScreen,
   FAQsScreen,
 } from '../../features/company/screens/CompanyScreens';
 import { ContactUsScreen } from '../../features/contact/screens/ContactUsScreen';
@@ -60,6 +61,7 @@ export function RootNavigator() {
         options={{ title: 'About Us' }}
       />
       <Stack.Screen name="Clients" component={ClientsScreen} />
+      <Stack.Screen name="Testimonials" component={TestimonialsScreen} />
       <Stack.Screen name="FAQs" component={FAQsScreen} />
       <Stack.Screen
         name="ContactUs"

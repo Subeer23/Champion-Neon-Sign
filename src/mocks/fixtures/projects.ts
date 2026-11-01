@@ -30,7 +30,7 @@ export const projectFixtures: readonly Project[] = [
     description:
       'Champion Group designs and delivers custom exhibition stands. Its services cover concept, design, fabrication and installation, with stands tailored to the space and brand.',
     solutionIds: ['exhibitions'],
-    imageIds: ['exhibition', 'exhibition-stand-a', 'exhibition-stand-b'],
+    imageIds: ['exhibition', 'exhibition-stand-a'],
     sourceUrl: 'https://championgroup.ae/project/exhibition-stands/',
   },
   {
@@ -40,7 +40,7 @@ export const projectFixtures: readonly Project[] = [
     description:
       'The official Events page presents event services from planning through execution. It does not identify a client, event date or location; these images are presented as a website showcase.',
     solutionIds: ['events'],
-    imageIds: ['events-hero', 'events-showcase', 'events-illustration'],
+    imageIds: ['events-showcase', 'events-hero'],
     sourceUrl: 'https://championgroup.ae/project/events/',
   },
 ];

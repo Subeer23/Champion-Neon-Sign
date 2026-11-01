@@ -4,7 +4,7 @@ export const solutionFixtures: readonly Solution[] = [
     id: 'signage',
     title: 'Signage',
     summary: 'Signs for shops, offices, events, and business branding.',
-    imageId: 'solution-signage',
+    imageId: 'events-showcase',
     sourceUrl: 'https://championgroup.ae/#services',
   },
   {
@@ -12,7 +12,7 @@ export const solutionFixtures: readonly Solution[] = [
     title: 'Graphics',
     summary:
       'Creative designs for vehicles, windows, and promotional materials.',
-    imageId: undefined,
+    imageId: 'branding',
     sourceUrl: 'https://championgroup.ae/#services',
   },
   {
@@ -26,7 +26,7 @@ export const solutionFixtures: readonly Solution[] = [
     id: 'outdoor',
     title: 'Outdoor',
     summary: 'Large outdoor signs, billboards, banners, and display boards.',
-    imageId: undefined,
+    imageId: 'led-display',
     sourceUrl: 'https://championgroup.ae/#services',
   },
   {

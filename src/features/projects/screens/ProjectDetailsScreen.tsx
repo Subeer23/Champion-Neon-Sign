@@ -1,5 +1,7 @@
 import React from 'react';
-import { Pressable, View, StyleSheet } from 'react-native';
+import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '../../../design-system/tokens/colors';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button } from '../../../design-system/components';
 import { BrandImage } from '../../../design-system/components/BrandImage';
@@ -17,12 +19,25 @@ export function ProjectDetailsScreen({
     route.params.projectId,
   );
   const solutions = useGetSolutionsQuery();
+  const { width, fontScale } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const contentWidth = Math.max(
+    0,
+    Math.min(width - insets.left - insets.right, 760) - 40,
+  );
+  const narrow = contentWidth / fontScale < 360;
+  const galleryIds = data?.imageIds.filter(id => getImage(id)) ?? [];
   return (
     <Screen>
-      <QueryState loading={isLoading} error={isError} onRetry={refetch} />
+      <QueryState
+        loading={isLoading}
+        error={isError}
+        empty={!data}
+        onRetry={refetch}
+      />
       {data && (
         <>
-          <ContentMedia imageId={data.imageIds[0]} title={data.title} />
+          <ContentMedia detail imageId={data.imageIds[0]} title={data.title} />
           <AppText variant="caption" muted>
             WEBSITE SHOWCASE / {data.title.toUpperCase()}
           </AppText>
@@ -32,7 +47,7 @@ export function ProjectDetailsScreen({
           <AppText>{data.description ?? data.summary}</AppText>
           <AppText variant="heading">Gallery</AppText>
           <View style={styles.gallery}>
-            {data.imageIds.map((id, index) => {
+            {galleryIds.map((id, index) => {
               const image = getImage(id);
               return image ? (
                 <Pressable
@@ -45,24 +60,35 @@ export function ProjectDetailsScreen({
                       initialIndex: index,
                     })
                   }
-                  style={styles.thumb}
+                  style={({ pressed }) => [
+                    styles.thumb,
+                    {
+                      width:
+                        index === 0 || narrow
+                          ? contentWidth
+                          : (contentWidth - 12) / 2,
+                    },
+                    pressed && styles.pressed,
+                  ]}
                 >
                   <BrandImage
                     source={image}
                     style={styles.image}
-                    resizeMode="cover"
+                    resizeMode="contain"
                   />
+                  <View style={styles.photoCaption}>
+                    <AppText variant="caption" style={styles.light}>
+                      PHOTO {String(index + 1).padStart(2, '0')}
+                    </AppText>
+                    <AppText variant="caption" style={styles.light}>
+                      View full image ↗
+                    </AppText>
+                  </View>
                 </Pressable>
               ) : null;
             })}
           </View>
-          {data.imageIds.includes('events-illustration') && (
-            <AppText variant="caption" muted>
-              The gallery includes an illustration published on the official
-              website, labelled in the viewer.
-            </AppText>
-          )}
-          {data.imageIds.length > 0 ? (
+          {galleryIds.length > 0 ? (
             <Button
               label="Open gallery"
               variant="secondary"
@@ -108,7 +134,16 @@ export function ProjectDetailsScreen({
   );
 }
 const styles = StyleSheet.create({
-  gallery: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  thumb: { width: '30%', minHeight: 72, borderRadius: 8, overflow: 'hidden' },
-  image: { width: '100%', aspectRatio: 1 },
+  gallery: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  thumb: { borderRadius: 16, overflow: 'hidden', backgroundColor: colors.dark },
+  image: { width: '100%', aspectRatio: 1.6 },
+  photoCaption: {
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  light: { color: colors.onDark },
+  pressed: { opacity: 0.85 },
 });

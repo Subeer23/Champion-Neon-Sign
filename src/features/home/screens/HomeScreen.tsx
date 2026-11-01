@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ScrollView,
+  Pressable,
   StyleSheet,
   View,
   useWindowDimensions,
@@ -15,7 +16,6 @@ import type { TabScreenProps } from '../../../app/navigation/types';
 import { AppText, Button } from '../../../design-system/components';
 import { BrandLogo } from '../../../design-system/components/BrandLogo';
 import { BrandImage } from '../../../design-system/components/BrandImage';
-import { FadeIn } from '../../../design-system/components/FadeIn';
 import { radii, spacing } from '../../../design-system/tokens/spacing';
 import { colors } from '../../../design-system/tokens/colors';
 import { images } from '../../../assets/images';
@@ -24,13 +24,7 @@ import { useGetProjectsQuery } from '../../projects/state/projectsApi';
 import { QueryState } from '../../../shared/components/QueryState';
 import { SectionHeading } from '../components/SectionHeading';
 import { ShowcaseCard } from '../components/ShowcaseCard';
-import {
-  clientPreview,
-  expertise,
-  reasons,
-  solutionImages,
-  projectImages,
-} from '../data/homeContent';
+import { clientPreview, expertise, reasons } from '../data/homeContent';
 export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
   const { width, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -69,21 +63,45 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
           automaticallyAdjustContentInsets={false}
           contentContainerStyle={styles.scroll}
         >
-          <FadeIn style={styles.content}>
+          <View style={styles.content}>
             <View style={styles.hero}>
-              <BrandImage
-                source={images.exhibition}
-                accessibilityLabel="Exhibition stand showcased by Champion Group"
-                style={[styles.heroImage, wide && styles.heroImageWide]}
-                resizeMode="cover"
-              />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Explore featured exhibition"
+                onPress={() =>
+                  navigation.navigate('ProjectDetails', {
+                    projectId: 'exhibition-stands',
+                  })
+                }
+                style={({ pressed }) => [
+                  styles.heroPhoto,
+                  pressed && styles.photoPressed,
+                ]}
+              >
+                <BrandImage
+                  source={images['exhibition-stand-a']}
+                  accessibilityLabel="Exhibition stand and digital display published by Champion Group"
+                  style={styles.heroImage}
+                  resizeMode="contain"
+                />
+                <View style={styles.heroPhotoCaption}>
+                  <AppText variant="caption" style={styles.white}>
+                    EXHIBITIONS & DIGITAL DISPLAYS
+                  </AppText>
+                  <AppText variant="caption" style={styles.white}>
+                    Explore ↗
+                  </AppText>
+                </View>
+              </Pressable>
               <View style={styles.heroCopy}>
-                <AppText style={styles.kicker}>VISION. CRAFT. IMPACT.</AppText>
+                <AppText style={styles.kicker}>
+                  QUALITY VISUAL COMMUNICATION
+                </AppText>
                 <AppText
                   accessibilityRole="header"
                   style={[styles.heroTitle, wide && styles.heroTitleWide]}
                 >
-                  Make your brand impossible to miss.
+                  Elevate Your Brand With Champion.
                 </AppText>
                 <AppText style={styles.heroDescription}>
                   Signage, digital displays and spaces that bring your identity
@@ -138,7 +156,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                       <ShowcaseCard
                         title={item.title}
                         subtitle={item.summary}
-                        image={solutionImages[item.id] ?? images.experience}
+                        imageId={item.imageId}
                         onPress={() =>
                           navigation.navigate('SolutionDetails', {
                             solutionId: item.id,
@@ -195,12 +213,12 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
                 onRetry={projects.refetch}
               />
               <View style={styles.grid}>
-                {projects.data?.slice(0, 2).map(item => (
+                {projects.data?.slice(0, 4).map(item => (
                   <View key={item.id} style={{ width: projectWidth }}>
                     <ShowcaseCard
                       title={item.title}
                       subtitle={item.summary}
-                      image={projectImages[item.id] ?? images.exhibition}
+                      imageId={item.imageIds[0]}
                       onPress={() =>
                         navigation.navigate('ProjectDetails', {
                           projectId: item.id,
@@ -298,7 +316,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
             <AppText variant="caption" muted style={styles.footer}>
               CHAMPION GROUP · IDEAS MADE VISIBLE
             </AppText>
-          </FadeIn>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -307,7 +325,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
 const styles = StyleSheet.create({
   scrollArea: { flex: 1 },
   screen: { flex: 1, backgroundColor: colors.background },
-  top: { backgroundColor: colors.dark },
+  top: { backgroundColor: '#101012' },
   headerLogo: { width: 124, height: 52 },
   headerLargeText: { flexDirection: 'column', alignItems: 'stretch' },
   header: {
@@ -323,9 +341,25 @@ const styles = StyleSheet.create({
   },
   scroll: { paddingBottom: 12 },
   content: { gap: 28, width: '100%', maxWidth: 1100, alignSelf: 'center' },
-  hero: { backgroundColor: colors.dark },
-  heroImage: { aspectRatio: 1.8, width: '100%' },
-  heroImageWide: { aspectRatio: 2.6 },
+  hero: { backgroundColor: '#101012' },
+  heroPhoto: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.borderDark,
+  },
+  photoPressed: { opacity: 0.85 },
+  heroPhotoCaption: {
+    padding: 14,
+    gap: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    backgroundColor: colors.dark,
+  },
+  heroImage: { aspectRatio: 16 / 9, width: '100%' },
   heroCopy: {
     paddingHorizontal: 20,
     paddingTop: 20,

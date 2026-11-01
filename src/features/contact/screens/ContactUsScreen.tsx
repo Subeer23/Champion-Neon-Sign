@@ -25,6 +25,7 @@ export function ContactUsScreen({ navigation }: RootScreenProps<'ContactUs'>) {
   return (
     <Screen>
       <ContentMedia
+        detail
         imageId="experience"
         title="Champion Group experience center"
       />

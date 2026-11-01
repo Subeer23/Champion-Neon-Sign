@@ -12,6 +12,7 @@ import { MoreScreen } from '../features/company/screens/MoreScreen';
 import {
   AboutUsScreen,
   ClientsScreen,
+  TestimonialsScreen,
   FAQsScreen,
 } from '../features/company/screens/CompanyScreens';
 import { ContactUsScreen } from '../features/contact/screens/ContactUsScreen';
@@ -119,6 +120,7 @@ describe('real navigation tree', () => {
     for (const [label, component] of [
       ['About Us', AboutUsScreen],
       ['Clients', ClientsScreen],
+      ['Testimonials', TestimonialsScreen],
       ['FAQs', FAQsScreen],
       ['Contact Us', ContactUsScreen],
     ] as const) {

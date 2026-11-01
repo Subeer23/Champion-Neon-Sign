@@ -29,6 +29,7 @@ function screenOptions({
 }): BottomTabNavigationOptions {
   return {
     header: TabHeader,
+    tabBarHideOnKeyboard: true,
     tabBarActiveTintColor: colors.primary,
     tabBarInactiveTintColor: colors.muted,
     tabBarLabelPosition: 'below-icon',

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { hydrateOnboarding } from '../../features/onboarding/state/onboardingSlice';
 import { SplashScreen } from '../../features/onboarding/screens/SplashScreen';
 import { OnboardingScreen } from '../../features/onboarding/screens/OnboardingScreen';
+import { LaunchReveal } from '../../features/onboarding/components/LaunchReveal';
 import { RootNavigator } from './RootNavigator';
 export function LaunchGate() {
   const { status, completed, error } = useAppSelector(
@@ -17,5 +18,9 @@ export function LaunchGate() {
       />
     );
   }
-  return completed ? <RootNavigator /> : <OnboardingScreen />;
+  return (
+    <LaunchReveal>
+      {completed ? <RootNavigator /> : <OnboardingScreen />}
+    </LaunchReveal>
+  );
 }

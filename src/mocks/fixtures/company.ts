@@ -14,8 +14,7 @@ export const companyContent: CompanyContent = {
     hours: ['Monday–Saturday: 8 AM–6 PM', 'Sunday: Closed'],
     whatsappUrl:
       'https://wa.me/971553182020?text=Hello%20Champion%21%20I%20have%20question%20about',
-    mapsUrl:
-      'https://www.google.com/maps/search/?api=1&query=Champion%20Neon%20Headquarters%2C%20Dubai%20Investments%20Park%202',
+    mapsUrl: 'https://www.google.com/maps?cid=10686161623741782269',
   },
   faqs: [
     {

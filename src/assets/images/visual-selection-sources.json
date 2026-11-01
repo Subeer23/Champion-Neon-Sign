@@ -1,0 +1,91 @@
+[
+  {
+    "imageId": "exhibition-stand-a",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2025-07-16-at-14.10.00-1024x576.jpeg",
+    "pageUrl": "https://championgroup.ae/project/exhibition-stands/",
+    "screens": ["Home hero", "Exhibition project gallery"],
+    "note": "Exhibition stand with large display; direct project page image.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "exhibition",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27-1.webp",
+    "pageUrl": "https://championgroup.ae/",
+    "screens": [
+      "Splash background",
+      "Exhibitions solution and details",
+      "Exhibition project gallery"
+    ],
+    "note": "Full exhibition stand published in homepage project showcase.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "events-showcase",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2026-01-21-at-11.51.51-1024x683.jpeg",
+    "pageUrl": "https://championgroup.ae/project/events/",
+    "screens": [
+      "Signage solution and details",
+      "Home featured Signage",
+      "Events project and gallery"
+    ],
+    "note": "Photograph of facade signage; reuse for Signage matches the actual visible installation, not an invented new project.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "led-display",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/Edit-02-576x1024.jpeg",
+    "pageUrl": "https://championgroup.ae/project/led-screens/",
+    "screens": ["Outdoor solution and details", "LED project gallery"],
+    "note": "Actual outdoor billboard on official LED page; appropriate for Outdoor, not evidence for unrelated services.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "led",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2026-01-06-at-23.45.43-2-1024x576.jpeg",
+    "pageUrl": "https://championgroup.ae/project/led-screens/",
+    "screens": [
+      "LED Screens solution/details",
+      "Home featured solution/project",
+      "LED project gallery"
+    ],
+    "note": "Indoor LED installation.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "led-portrait",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2025-07-19-at-16.27.37-813x1024.jpeg",
+    "pageUrl": "https://championgroup.ae/project/led-screens/",
+    "screens": ["LED project gallery"],
+    "note": "Portrait indoor display; contain framing retains full installation.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "branding",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/Passenger-Side.jpg",
+    "pageUrl": "https://championgroup.ae/project/branding/",
+    "screens": [
+      "Graphics solution/details",
+      "Branding solution/details",
+      "Home featured solution/project",
+      "Branding gallery"
+    ],
+    "note": "Vehicle branding is relevant to both graphics and branding.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "experience",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/Capture-1024x524.png",
+    "pageUrl": "https://championgroup.ae/",
+    "screens": ["About Us", "Contact", "Onboarding"],
+    "note": "Company premises; retained for About rather than substituting a client-site photograph.",
+    "verifiedOn": "2026-11-01"
+  },
+  {
+    "imageId": "events-hero",
+    "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27.webp",
+    "pageUrl": "https://championgroup.ae/",
+    "screens": ["Events solution/details", "Events gallery"],
+    "note": "Existing official homepage Events showcase photograph.",
+    "verifiedOn": "2026-11-01"
+  }
+]

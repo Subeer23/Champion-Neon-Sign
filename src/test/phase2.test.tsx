@@ -173,7 +173,7 @@ describe('Phase 2 launch and Home experience', () => {
       createTestStore({ preferences: createMemoryPreferences(true) }),
     );
     const cards = renderer.root.findAllByType(ShowcaseCard);
-    expect(cards).toHaveLength(5);
+    expect(cards).toHaveLength(7);
     const titles = cards.map(card => card.props.title);
     for (const [index, title] of titles.entries()) {
       const card = renderer.root.findAllByType(ShowcaseCard)[index]!;

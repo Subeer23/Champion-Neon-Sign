@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { AppText } from '../../design-system/components';
+import { AppText, Button } from '../../design-system/components';
 import { colors } from '../../design-system/tokens/colors';
 import { ContentMedia } from './ContentMedia';
 import { SearchField } from './SearchField';
@@ -64,7 +64,9 @@ export function CatalogList({
         keyboardDismissMode="on-drag"
         contentInsetAdjustmentBehavior="never"
         contentContainerStyle={styles.content}
-        initialNumToRender={6}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
         windowSize={5}
         ListHeaderComponent={
           <View style={styles.heading}>
@@ -107,9 +109,18 @@ export function CatalogList({
         }
         ListEmptyComponent={
           !loading && !error ? (
-            <AppText muted>
-              No matching results. Try a different search or filter.
-            </AppText>
+            <View style={styles.empty}>
+              <AppText variant="heading">No matches found</AppText>
+              <AppText muted>Try a different search or filter.</AppText>
+              <Button
+                label="Clear search and filters"
+                variant="secondary"
+                onPress={() => {
+                  setQuery('');
+                  setCategory('All');
+                }}
+              />
+            </View>
           ) : undefined
         }
         renderItem={({ item }) => (
@@ -140,6 +151,12 @@ export function CatalogList({
   );
 }
 const styles = StyleSheet.create({
+  empty: {
+    padding: 20,
+    gap: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+  },
   half: { width: '50%' },
   full: { width: '100%' },
   safe: { flex: 1, backgroundColor: colors.background },

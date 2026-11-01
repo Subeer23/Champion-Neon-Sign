@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { Image, View, StyleSheet, type ImageProps } from 'react-native';
 import { AppText } from './AppText';
 import { colors } from '../tokens/colors';
-export function BrandImage({
+export function BrandImage(props: ImageProps) {
+  // Remount failure state only when the image source changes (e.g. onboarding).
+  return <ImageContent key={JSON.stringify(props.source)} {...props} />;
+}
+function ImageContent({
   accessibilityLabel,
   style,
+  onError,
   ...props
 }: ImageProps) {
   const [failed, setFailed] = useState(false);
@@ -21,7 +26,12 @@ export function BrandImage({
       accessibilityLabel={accessibilityLabel}
       accessible={Boolean(accessibilityLabel)}
       style={style}
-      onError={() => setFailed(true)}
+      onError={event => {
+        setFailed(true);
+        onError?.(event);
+      }}
+      resizeMethod="resize"
+      fadeDuration={0}
     />
   );
 }

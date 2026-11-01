@@ -1,58 +1,74 @@
 import React from 'react';
-import Svg, { Path, Rect } from 'react-native-svg';
-import { StyleSheet } from 'react-native';
-import { colors } from '../../../design-system/tokens/colors';
-/** Quiet architectural framing; decorative and excluded from accessibility. */
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import Svg, {
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Rect,
+  Stop,
+} from 'react-native-svg';
+import { BrandImage } from '../../../design-system/components/BrandImage';
+import { images } from '../../../assets/images';
+/** Official exhibition photography; gradients keep the original logo readable. */
 export function SplashArtwork() {
+  const { width, height } = useWindowDimensions();
+  const photoHeight = Math.min(height * 0.62, width * 0.75);
   return (
-    <Svg
+    <View
       pointerEvents="none"
       accessible={false}
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
       style={StyleSheet.absoluteFill}
-      width="100%"
-      height="100%"
-      viewBox="0 0 400 800"
-      preserveAspectRatio="xMidYMid slice"
     >
-      <Path
-        d="M-60 240L160 20H360V150L270 240 M-60 262L168 34H346V144L258 232 M288 0V98L220 166"
-        fill="none"
-        stroke={colors.onDark}
-        strokeOpacity={0.055}
-        strokeWidth={1}
-      />
-      <Path
-        d="M0 650H110L228 768H430 M0 674H100L226 800 M330 620V748H400"
-        fill="none"
-        stroke={colors.onDark}
-        strokeOpacity={0.04}
-        strokeWidth={1}
-      />
-      <Path
-        d="M288 70V98L264 122"
-        fill="none"
-        stroke={colors.primary}
-        strokeOpacity={0.6}
-        strokeWidth={1.5}
-      />
-      <Rect
-        x={20}
-        y={320}
-        width={2}
-        height={96}
-        fill={colors.primary}
-        opacity={0.15}
-      />
-      <Rect
-        x={378}
-        y={358}
-        width={2}
-        height={96}
-        fill={colors.primary}
-        opacity={0.1}
-      />
-    </Svg>
+      <View
+        style={[
+          styles.photograph,
+          { top: height * 0.45 - photoHeight / 2, height: photoHeight },
+        ]}
+      >
+        <BrandImage
+          source={images.exhibition}
+          resizeMode="contain"
+          style={StyleSheet.absoluteFill}
+        />
+        <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+          <Defs>
+            <LinearGradient id="photoEdges" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#101012" />
+              <Stop offset="0.18" stopColor="#101012" stopOpacity="0" />
+              <Stop offset="0.82" stopColor="#101012" stopOpacity="0" />
+              <Stop offset="1" stopColor="#101012" />
+            </LinearGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill="url(#photoEdges)" />
+        </Svg>
+      </View>
+      <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+        <Defs>
+          <LinearGradient id="campaignShade" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#101012" stopOpacity="0.94" />
+            <Stop offset="0.25" stopColor="#101012" stopOpacity="0.42" />
+            <Stop offset="0.45" stopColor="#101012" stopOpacity="0.74" />
+            <Stop offset="0.64" stopColor="#101012" stopOpacity="0.30" />
+            <Stop offset="0.82" stopColor="#101012" stopOpacity="0.93" />
+            <Stop offset="1" stopColor="#101012" />
+          </LinearGradient>
+          <RadialGradient id="campaignLight" cx="1" cy="0.48" rx="0.8" ry="0.5">
+            <Stop offset="0" stopColor="#D71D24" stopOpacity="0.24" />
+            <Stop offset="1" stopColor="#D71D24" stopOpacity="0" />
+          </RadialGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#campaignShade)" />
+        <Rect width="100%" height="100%" fill="url(#campaignLight)" />
+      </Svg>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  photograph: {
+    position: 'absolute',
+    width: '100%',
+  },
+});

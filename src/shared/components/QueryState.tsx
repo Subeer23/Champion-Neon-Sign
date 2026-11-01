@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { AppText, Button, Card } from '../../design-system/components';
 import { colors } from '../../design-system/tokens/colors';
 export function QueryState({
@@ -15,10 +15,15 @@ export function QueryState({
 }) {
   if (loading) {
     return (
-      <ActivityIndicator
-        accessibilityLabel="Loading content"
-        color={colors.primary}
-      />
+      <View style={styles.loading} accessibilityLiveRegion="polite">
+        <ActivityIndicator
+          accessibilityLabel="Loading content"
+          color={colors.primary}
+        />
+        <AppText variant="caption" muted>
+          Loading content…
+        </AppText>
+      </View>
     );
   }
   if (error) {
@@ -34,3 +39,7 @@ export function QueryState({
   }
   return null;
 }
+
+const styles = StyleSheet.create({
+  loading: { padding: 24, gap: 12, alignItems: 'center' },
+});

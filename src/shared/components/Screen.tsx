@@ -17,6 +17,8 @@ export function Screen({ children }: PropsWithChildren) {
     >
       <ScrollView
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
         contentContainerStyle={styles.content}
@@ -29,7 +31,9 @@ export function Screen({ children }: PropsWithChildren) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: {
-    padding: spacing.lg,
+    paddingHorizontal: 20,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
     gap: spacing.md,
     width: '100%',
     maxWidth: 760,

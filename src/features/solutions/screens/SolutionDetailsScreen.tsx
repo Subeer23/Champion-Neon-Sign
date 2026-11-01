@@ -21,10 +21,15 @@ export function SolutionDetailsScreen({
     ) ?? [];
   return (
     <Screen>
-      <QueryState loading={isLoading} error={isError} onRetry={refetch} />
+      <QueryState
+        loading={isLoading}
+        error={isError}
+        empty={!data}
+        onRetry={refetch}
+      />
       {data && (
         <>
-          <ContentMedia imageId={data.imageId} title={data.title} />
+          <ContentMedia detail imageId={data.imageId} title={data.title} />
           <AppText variant="caption" muted>
             CHAMPION GROUP / SOLUTIONS
           </AppText>

@@ -13,7 +13,7 @@ it('resolves official media or the original website icon for every service', () 
     if (item.imageId) expect(getImage(item.imageId)).toBeDefined();
   }
   expect(solutionFixtures.find(item => item.id === 'signage')?.imageId).toBe(
-    'solution-signage',
+    'events-showcase',
   );
 });
 it('includes the complete current client section and all six attributed testimonials', () => {

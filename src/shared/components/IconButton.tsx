@@ -18,7 +18,11 @@ export function IconButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.button,
+        dark ? styles.dark : styles.light,
+        pressed && styles.pressed,
+      ]}
     >
       <Svg width={24} height={24} viewBox="0 0 24 24" accessible={false}>
         <Path
@@ -41,5 +45,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 22,
   },
+  light: {
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  dark: { backgroundColor: colors.borderDark },
   pressed: { opacity: 0.55 },
 });

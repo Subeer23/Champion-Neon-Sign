@@ -1,0 +1,29 @@
+{
+  "verifiedOn": "2026-11-01",
+  "mark": {
+    "url": "https://championgroup.ae/wp-content/uploads/2025/03/champion-advertising.png",
+    "discovery": "Homepage rel=icon and apple-touch-icon use the 150px and 300px variants of this official compact C mark.",
+    "dimensions": [
+      500,
+      500
+    ],
+    "sha256": "345f86cb364acf4ff8c7137c14f9370c5fb89e8758c53f1aaeb26633f956674c",
+    "treatment": "Original pixels retained; proportionally resized and placed on charcoal. Android static splash vector traces the alpha boundary with 0.45px maximum contour simplification; no letterform redesign."
+  },
+  "photo": {
+    "url": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27-1.webp",
+    "localFile": "../images/exhibition.jpg",
+    "treatment": "Existing verified exhibition image; full image contained within a cinematic background band, with live SVG charcoal/red overlays. No portrait crop, stock or AI imagery."
+  },
+  "wordmark": {
+    "url": "https://championgroup.ae/wp-content/uploads/2025/07/Champion-Group-scaled.png",
+    "localFile": "../images/logo.png",
+    "aspectRatio": "900:380"
+  },
+  "copy": {
+    "url": "https://championgroup.ae/",
+    "headline": "Elevate Your Brand With Champion.",
+    "support": "Quality Visual Communication Solutions",
+    "established": "Since 1989"
+  }
+}

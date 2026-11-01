@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { BrandImage } from '../../../design-system/components/BrandImage';
@@ -13,6 +14,7 @@ export function AboutUsScreen({ navigation }: RootScreenProps<'AboutUs'>) {
   return (
     <Screen>
       <ContentMedia
+        detail
         imageId="experience"
         title="Champion Group experience center"
       />
@@ -41,9 +43,17 @@ export function AboutUsScreen({ navigation }: RootScreenProps<'AboutUs'>) {
     </Screen>
   );
 }
-export function ClientsScreen() {
+export function ClientsScreen({ navigation }: RootScreenProps<'Clients'>) {
   const { width, fontScale } = useWindowDimensions();
-  const columns = width / fontScale >= 600 ? 3 : 2;
+  const insets = useSafeAreaInsets();
+  const contentWidth = Math.min(width - insets.left - insets.right, 760) - 40;
+  const columns =
+    contentWidth / fontScale >= 560
+      ? 3
+      : contentWidth / fontScale < 260
+      ? 1
+      : 2;
+  const logoWidth = (contentWidth - 12 * (columns - 1)) / columns;
   return (
     <Screen>
       <AppText style={styles.eyebrow}>OUR CLIENTS</AppText>
@@ -55,10 +65,7 @@ export function ClientsScreen() {
         {companyContent.clients.map(client => (
           <View
             key={client.name}
-            style={[
-              styles.logoCard,
-              columns === 3 ? styles.third : styles.half,
-            ]}
+            style={[styles.logoCard, { width: logoWidth }]}
           >
             <BrandImage
               source={getImage(client.imageId)!}
@@ -72,6 +79,17 @@ export function ClientsScreen() {
       {companyContent.clients.length === 0 && (
         <AppText muted>No client logos available.</AppText>
       )}
+      <Button
+        label="Read testimonials"
+        variant="secondary"
+        onPress={() => navigation.navigate('Testimonials')}
+      />
+    </Screen>
+  );
+}
+export function TestimonialsScreen() {
+  return (
+    <Screen>
       <AppText variant="title" accessibilityRole="header">
         What our clients say
       </AppText>
@@ -147,8 +165,6 @@ export function FAQsScreen() {
   );
 }
 const styles = StyleSheet.create({
-  third: { width: '31%' },
-  half: { width: '48%' },
   eyebrow: {
     fontSize: 11,
     letterSpacing: 1.8,

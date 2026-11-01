@@ -1,3 +1,12 @@
+# Current splash implementation
+
+See [BRANDING.md](BRANDING.md) for the replacement photographic composition,
+official launcher mark, prepared native launch resources, previews and validation.
+Native assets ARE now updated on disk; they have NOT been built or installed.
+The earlier implementation notes below describe superseded work.
+
+---
+
 # Cinematic splash refinement
 
 The React Native splash now uses three zones: low-opacity architectural linework,
@@ -34,3 +43,27 @@ checks (including cold-start transitions and clipping) remain outstanding.
 
 No signing changes, release builds, pushes or unrelated screen changes were made
 for this refinement. Existing Phase 3 changes in the workspace were preserved.
+
+
+## Physical-device feedback refinement — 1 November 2026
+
+The React Native screen now starts with a visible logo (85% opacity), subtle
+background accents and readable brand copy, even while the motion preference is
+pending. Its 420 ms entrance settles the logo from 0.99 scale to 1. The brand copy
+is grouped beneath the centered logo instead of being pushed to the bottom.
+Square/corner motifs and the line-scale animation were removed from React Native;
+only diagonal architectural strokes and soft low-opacity red bands remain.
+LaunchGate still renders exactly one splash during preference hydration, with no
+delay or new navigation state. Debug downloading indicators remain untouched.
+
+The installed Android 12+ native `splash_icon.xml` still contains the previous
+square motif. Replacing that compiled native resource requires a future explicitly
+authorized rebuild/reinstall. Fast Refresh cannot change it. No native files,
+build commands or installation were performed in this refinement.
+
+## Phase 3 final polish — 1 November 2026
+
+The existing staged JavaScript splash refinement is preserved. Its subtle entrance
+is now 240 ms, with no artificial startup delay. No native launch resource was
+modified or rebuilt in this pass. The installed native square motif remains a
+physical-device limitation requiring separately approved native work.
