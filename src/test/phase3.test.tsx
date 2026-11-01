@@ -241,13 +241,13 @@ describe('Phase 3 navigation and interaction', () => {
     await act(() => navigation().navigate('ContactUs'));
     await settle();
     expect(renderer.root.findByType(ContactUsScreen)).toBeDefined();
-    await button('Call Champion Group');
+    await action('Call Champion Group');
     expect(
       renderer.root.findAllByProps({ accessibilityRole: 'alert' }).length,
     ).toBeGreaterThan(0);
     expect(open).not.toHaveBeenCalled();
     jest.spyOn(Linking, 'canOpenURL').mockResolvedValue(true);
-    await button('Open Maps');
+    await action('Open Maps');
     expect(open).toHaveBeenCalledWith(companyContent.contact.mapsUrl);
   });
 });

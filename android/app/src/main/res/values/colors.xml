@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><color name="champion_launch_background">#101012</color></resources>
+<resources><color name="champion_launch_background">#101012</color><color name="champion_icon_background">#101012</color></resources>

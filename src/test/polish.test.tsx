@@ -1,6 +1,8 @@
 import React from 'react';
 import Renderer, { act } from 'react-test-renderer';
-import { Image, Linking, Platform } from 'react-native';
+import { Path } from 'react-native-svg';
+import { IconButton } from '../shared/components/IconButton';
+import { Image, Linking, Platform, StyleSheet } from 'react-native';
 import { BrandImage } from '../design-system/components/BrandImage';
 import {
   openContactLink,
@@ -85,4 +87,29 @@ it('recovers a failed image when the source changes without an effect or stale f
     uri: 'second',
   });
   await act(() => renderer.unmount());
+});
+
+it('keeps the shared back arrow visible on both dark button surfaces', async () => {
+  for (const dark of [false, true]) {
+    let renderer!: Renderer.ReactTestRenderer;
+    const onPress = jest.fn();
+    await act(() => {
+      renderer = Renderer.create(
+        <IconButton label="Go back" dark={dark} onPress={onPress} />,
+      );
+    });
+    const button = renderer.root.findAllByProps({
+      accessibilityLabel: 'Go back',
+    })[0]!;
+    const background = StyleSheet.flatten(
+      typeof button.props.style === 'function'
+        ? button.props.style({ pressed: false })
+        : button.props.style,
+    ).backgroundColor;
+    expect(renderer.root.findByType(Path).props.stroke).toBe('#FFFFFF');
+    expect(renderer.root.findByType(Path).props.stroke).not.toBe(background);
+    await act(() => button.props.onPress());
+    expect(onPress).toHaveBeenCalledTimes(1);
+    await act(() => renderer.unmount());
+  }
 });

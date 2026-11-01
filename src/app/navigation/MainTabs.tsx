@@ -13,13 +13,26 @@ import { typography } from '../../design-system/tokens/typography';
 import { HomeScreen } from '../../features/home/screens/HomeScreen';
 import { SolutionsScreen } from '../../features/solutions/screens/SolutionsScreen';
 import { ProjectsScreen } from '../../features/projects/screens/ProjectsScreen';
-import { MoreScreen } from '../../features/company/screens/MoreScreen';
+import { ClientsScreen } from '../../features/company/screens/CompanyScreens';
+import { ContactUsScreen } from '../../features/contact/screens/ContactUsScreen';
 import { TabIcon } from './TabIcon';
 import type { MainTabParamList } from './types';
 const Tabs = createBottomTabNavigator<MainTabParamList>();
 function TabHeader({ route }: BottomTabHeaderProps) {
   return (
-    <Header title={route.name === 'Home' ? 'Champion Group' : route.name} />
+    <Header
+      title={
+        route.name === 'ClientsTab'
+          ? 'Our Clients'
+          : route.name === 'ContactTab'
+          ? 'Contact Us'
+          : route.name === 'Solutions'
+          ? 'Our Solutions'
+          : route.name === 'Projects'
+          ? 'Our Projects'
+          : 'Champion Group'
+      }
+    />
   );
 }
 function screenOptions({
@@ -68,7 +81,16 @@ export function MainTabs() {
       />
       <Tabs.Screen name="Solutions" component={SolutionsScreen} />
       <Tabs.Screen name="Projects" component={ProjectsScreen} />
-      <Tabs.Screen name="More" component={MoreScreen} />
+      <Tabs.Screen
+        name="ClientsTab"
+        component={ClientsScreen}
+        options={{ title: 'Clients' }}
+      />
+      <Tabs.Screen
+        name="ContactTab"
+        component={ContactUsScreen}
+        options={{ title: 'Contact' }}
+      />
     </Tabs.Navigator>
   );
 }

@@ -6,7 +6,7 @@ import type { AppStore } from './store/store';
 export default function App({ store }: { store?: AppStore }) {
   return (
     <AppProviders store={store}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <LaunchGate />
     </AppProviders>
   );

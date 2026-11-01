@@ -21,6 +21,7 @@ export function Screen({ children }: PropsWithChildren) {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
+        automaticallyAdjustKeyboardInsets
         contentContainerStyle={styles.content}
       >
         {children}

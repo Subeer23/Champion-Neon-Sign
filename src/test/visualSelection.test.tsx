@@ -42,7 +42,7 @@ it('preserves a portrait billboard inside card and detail frames without cover c
     });
     let media = renderer.root.findByType(BrandImage);
     expect(media.props.resizeMode).toBe('contain');
-    expect(StyleSheet.flatten(media.props.style).aspectRatio).toBe(1.6);
+    expect(StyleSheet.flatten(media.parent!.props.style).aspectRatio).toBe(1.6);
     await act(() =>
       renderer.update(
         <ContentMedia detail imageId="led-display" title="Outdoor" />,
@@ -50,7 +50,7 @@ it('preserves a portrait billboard inside card and detail frames without cover c
     );
     media = renderer.root.findByType(BrandImage);
     expect(media.props.resizeMode).toBe('contain');
-    expect(StyleSheet.flatten(media.props.style).aspectRatio).toBe(0.8);
+    expect(StyleSheet.flatten(media.parent!.props.style).aspectRatio).toBe(0.8);
   } finally {
     await act(() => renderer?.unmount());
     resolve.mockRestore();

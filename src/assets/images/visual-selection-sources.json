@@ -13,8 +13,10 @@
     "pageUrl": "https://championgroup.ae/",
     "screens": [
       "Splash background",
+      "Onboarding 3",
       "Exhibitions solution and details",
-      "Exhibition project gallery"
+      "Exhibition project gallery",
+      "Demo Home preview"
     ],
     "note": "Full exhibition stand published in homepage project showcase.",
     "verifiedOn": "2026-11-01"
@@ -24,8 +26,8 @@
     "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2026-01-21-at-11.51.51-1024x683.jpeg",
     "pageUrl": "https://championgroup.ae/project/events/",
     "screens": [
+      "Onboarding 2",
       "Signage solution and details",
-      "Home featured Signage",
       "Events project and gallery"
     ],
     "note": "Photograph of facade signage; reuse for Signage matches the actual visible installation, not an invented new project.",
@@ -44,8 +46,8 @@
     "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/WhatsApp-Image-2026-01-06-at-23.45.43-2-1024x576.jpeg",
     "pageUrl": "https://championgroup.ae/project/led-screens/",
     "screens": [
-      "LED Screens solution/details",
-      "Home featured solution/project",
+      "Onboarding 1",
+      "LED Screens solution and details",
       "LED project gallery"
     ],
     "note": "Indoor LED installation.",
@@ -76,7 +78,7 @@
     "imageId": "experience",
     "sourceUrl": "https://championgroup.ae/wp-content/uploads/2025/07/Capture-1024x524.png",
     "pageUrl": "https://championgroup.ae/",
-    "screens": ["About Us", "Contact", "Onboarding"],
+    "screens": ["About Us", "Welcome"],
     "note": "Company premises; retained for About rather than substituting a client-site photograph.",
     "verifiedOn": "2026-11-01"
   },

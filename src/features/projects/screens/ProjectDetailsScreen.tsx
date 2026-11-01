@@ -1,13 +1,18 @@
+import {
+  useAuthRepository,
+  useDemoSnapshot,
+} from '../../auth/data/AuthRepositoryProvider';
+import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import React from 'react';
 import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../design-system/tokens/colors';
 import type { RootScreenProps } from '../../../app/navigation/types';
-import { AppText, Button } from '../../../design-system/components';
+import { AppText, Button, Card } from '../../../design-system/components';
 import { BrandImage } from '../../../design-system/components/BrandImage';
 import { getImage } from '../../../assets/images';
 import { Screen } from '../../../shared/components/Screen';
-import { ContentMedia } from '../../../shared/components/ContentMedia';
+import { MediaCarousel } from '../../../shared/components/MediaCarousel';
 import { QueryState } from '../../../shared/components/QueryState';
 import { useGetProjectQuery } from '../state/projectsApi';
 import { useGetSolutionsQuery } from '../../solutions/state/solutionsApi';
@@ -15,6 +20,9 @@ export function ProjectDetailsScreen({
   route,
   navigation,
 }: RootScreenProps<'ProjectDetails'>) {
+  const { profile, savedProjects } = useDemoSnapshot();
+  const repository = useAuthRepository();
+  const action = useAsyncAction();
   const { data, isLoading, isError, refetch } = useGetProjectQuery(
     route.params.projectId,
   );
@@ -37,14 +45,45 @@ export function ProjectDetailsScreen({
       />
       {data && (
         <>
-          <ContentMedia detail imageId={data.imageIds[0]} title={data.title} />
+          <MediaCarousel imageIds={galleryIds} title={data.title} />
+          <Button
+            label={
+              profile
+                ? savedProjects.includes(data.id)
+                  ? 'Unsave project'
+                  : 'Save project'
+                : 'Login to save project'
+            }
+            variant="secondary"
+            loading={action.busy}
+            onPress={() =>
+              profile
+                ? action.run(() => repository.toggleSavedProject(data.id))
+                : navigation.navigate('Profile')
+            }
+          />
+          {action.error && (
+            <AppText accessibilityRole="alert">{action.error}</AppText>
+          )}
           <AppText variant="caption" muted>
             WEBSITE SHOWCASE / {data.title.toUpperCase()}
           </AppText>
           <AppText variant="title" accessibilityRole="header">
             {data.title}
           </AppText>
+          <AppText variant="heading">Project Overview</AppText>
           <AppText>{data.description ?? data.summary}</AppText>
+          <Card>
+            <AppText variant="caption" muted>
+              Solutions
+            </AppText>
+            <AppText>
+              {solutions.data
+                ?.filter(item => data.solutionIds.includes(item.id))
+                .map(item => item.title)
+                .join(' · ') || 'Champion Group showcase'}
+            </AppText>
+          </Card>
           <AppText variant="heading">Gallery</AppText>
           <View style={styles.gallery}>
             {galleryIds.map((id, index) => {

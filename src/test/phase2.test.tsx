@@ -1,4 +1,5 @@
 import React from 'react';
+import { AccessibilityInfo, Animated } from 'react-native';
 import Renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
 import App from '../../App';
 import { Button } from '../design-system/components';
@@ -27,6 +28,10 @@ describe('Phase 2 launch and Home experience', () => {
     await act(() => {
       renderer = Renderer.create(<App store={store} />);
     });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    // Queries mount after the entrance animation completes.
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
@@ -64,6 +69,57 @@ describe('Phase 2 launch and Home experience', () => {
       store?.dispatch(rootApi.util.resetApiState());
     });
   });
+  it('holds the splash for at least three seconds even after the entrance and preferences are ready', async () => {
+    store = createTestStore();
+    await act(async () => {
+      renderer = Renderer.create(<App store={store} />);
+    });
+    await act(async () => {
+      renderer.root.findByType(SplashScreen).props.onEntranceComplete();
+    });
+    expect(store.getState().onboarding.status).toBe('ready');
+    await act(async () => {
+      jest.advanceTimersByTime(2999);
+    });
+    expect(renderer.root.findAllByType(SplashScreen).length).toBe(1);
+    await act(async () => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(renderer.root.findAllByType(SplashScreen).length).toBe(0);
+    expect(renderer.root.findAllByType(OnboardingScreen).length).toBe(1);
+  });
+  it('does not discard the photographic splash when preferences resolve before its entrance', async () => {
+    const originalReducedMotion = jest
+      .mocked(AccessibilityInfo.isReduceMotionEnabled)
+      .getMockImplementation();
+    const reduced = jest
+      .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+      .mockResolvedValue(false);
+    let finish: ((result: { finished: boolean }) => void) | undefined;
+    const timing = jest.spyOn(Animated, 'timing').mockImplementation(() => ({
+      start: callback => {
+        finish = callback;
+      },
+      stop: jest.fn(),
+      reset: jest.fn(),
+    }));
+    try {
+      await mount(createTestStore());
+      expect(store.getState().onboarding.status).toBe('ready');
+      expect(renderer.root.findAllByType(SplashScreen).length).toBe(1);
+      await act(async () => {
+        finish?.({ finished: true });
+      });
+      expect(renderer.root.findAllByType(OnboardingScreen).length).toBe(1);
+    } finally {
+      timing.mockRestore();
+      reduced.mockRestore();
+      if (originalReducedMotion)
+        jest
+          .mocked(AccessibilityInfo.isReduceMotionEnabled)
+          .mockImplementation(originalReducedMotion);
+    }
+  });
   it('shows branded splash only while hydration is pending, then onboarding', async () => {
     const preferences = createMemoryPreferences();
     let resolve!: (value: boolean) => void;
@@ -82,16 +138,17 @@ describe('Phase 2 launch and Home experience', () => {
   it('walks through all three pages, persists completion, and skips onboarding on relaunch', async () => {
     const preferences = createMemoryPreferences();
     await mount(createTestStore({ preferences }));
-    expect(JSON.stringify(renderer.toJSON())).toContain('Welcome to');
+    expect(JSON.stringify(renderer.toJSON())).toContain('Signage &');
     await press('Next');
-    expect(JSON.stringify(renderer.toJSON())).toContain('Explore Our');
+    expect(JSON.stringify(renderer.toJSON())).toContain('Built With');
     const page = renderer.root.findAllByProps({
       accessibilityLabel: 'Go to onboarding page 2',
     })[0];
     expect(page?.props.accessibilityState.selected).toBe(true);
     await press('Next');
-    expect(JSON.stringify(renderer.toJSON())).toContain('Bring Your');
+    expect(JSON.stringify(renderer.toJSON())).toContain('Your Brand.');
     await press('Get Started');
+    await press('Continue as guest');
     expect(renderer.root.findByType(HomeScreen)).toBeDefined();
     expect(await preferences.getOnboardingCompleted()).toBe(true);
     await act(() => {
@@ -123,6 +180,7 @@ describe('Phase 2 launch and Home experience', () => {
     await act(async () => {
       skip().props.onPress();
     });
+    await press('Continue as guest');
     expect(renderer.root.findByType(HomeScreen)).toBeDefined();
   });
   it('offers a retry when startup preferences cannot be read', async () => {
@@ -152,7 +210,7 @@ describe('Phase 2 launch and Home experience', () => {
     );
     expect(renderer.root.findAllByType(ShowcaseCard)).toHaveLength(0);
     await press('Try again');
-    expect(renderer.root.findAllByType(ShowcaseCard)).toHaveLength(3);
+    expect(renderer.root.findAllByType(ShowcaseCard)).toHaveLength(4);
   });
   it('connects Home company, client, and contact calls to their existing routes', async () => {
     await mount(
@@ -173,7 +231,7 @@ describe('Phase 2 launch and Home experience', () => {
       createTestStore({ preferences: createMemoryPreferences(true) }),
     );
     const cards = renderer.root.findAllByType(ShowcaseCard);
-    expect(cards).toHaveLength(7);
+    expect(cards).toHaveLength(8);
     const titles = cards.map(card => card.props.title);
     for (const [index, title] of titles.entries()) {
       const card = renderer.root.findAllByType(ShowcaseCard)[index]!;
@@ -184,7 +242,7 @@ describe('Phase 2 launch and Home experience', () => {
         jest.runOnlyPendingTimers();
       });
       const detail = renderer.root.findByType(
-        index < 3 ? SolutionDetailsScreen : ProjectDetailsScreen,
+        index < 4 ? SolutionDetailsScreen : ProjectDetailsScreen,
       );
       expect(detail).toBeDefined();
       expect(JSON.stringify(renderer.toJSON())).toContain(title);
@@ -195,8 +253,8 @@ describe('Phase 2 launch and Home experience', () => {
       .filter(button =>
         ['Get a quote', 'Start your project'].includes(button.props.label),
       );
-    expect(quoteButtons).toHaveLength(3);
-    for (let index = 0; index < 3; index++) {
+    expect(quoteButtons).toHaveLength(2);
+    for (let index = 0; index < 2; index++) {
       const button = renderer.root
         .findAllByType(Button)
         .filter(item =>

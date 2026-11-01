@@ -26,9 +26,9 @@ export function IconButton({
     >
       <Svg width={24} height={24} viewBox="0 0 24 24" accessible={false}>
         <Path
-          d={icon === 'back' ? 'M15 5l-7 7 7 7' : 'M6 6l12 12M6 18L18 6'}
+          d={icon === 'back' ? 'M19 12H5m7-7-7 7 7 7' : 'M6 6l12 12M6 18L18 6'}
           fill="none"
-          stroke={dark ? colors.onDark : colors.dark}
+          stroke={colors.onDark}
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   light: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },

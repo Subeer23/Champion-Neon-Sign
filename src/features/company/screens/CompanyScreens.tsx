@@ -1,27 +1,51 @@
+import { CinematicBackdrop } from '../../../shared/components/CinematicBackdrop';
+import { images } from '../../../assets/images';
 import React, { useState } from 'react';
 import { View, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { RootScreenProps } from '../../../app/navigation/types';
+import type {
+  RootNavigation,
+  RootScreenProps,
+} from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { BrandImage } from '../../../design-system/components/BrandImage';
 import { colors } from '../../../design-system/tokens/colors';
 import { getImage } from '../../../assets/images';
 import { Screen } from '../../../shared/components/Screen';
-import { ContentMedia } from '../../../shared/components/ContentMedia';
 import { SearchField } from '../../../shared/components/SearchField';
 import { companyContent } from '../../../mocks/fixtures/company';
 export function AboutUsScreen({ navigation }: RootScreenProps<'AboutUs'>) {
   return (
     <Screen>
-      <ContentMedia
-        detail
-        imageId="experience"
-        title="Champion Group experience center"
-      />
-      <AppText style={styles.eyebrow}>SINCE 1989</AppText>
-      <AppText variant="title" accessibilityRole="header">
-        Ideas made visible.
-      </AppText>
+      <View style={styles.aboutHero}>
+        <CinematicBackdrop source={images.experience} />
+        <View style={styles.aboutCopy}>
+          <AppText style={styles.eyebrow}>SINCE 1989</AppText>
+          <AppText variant="title" accessibilityRole="header">
+            Ideas made{'\n'}
+            <AppText variant="title" style={styles.red}>
+              visible.
+            </AppText>
+          </AppText>
+          <AppText style={styles.aboutText}>
+            Signage and visual communication, from concept to installation.
+          </AppText>
+        </View>
+      </View>
+      <View style={styles.facts}>
+        {[
+          'Established in 1989',
+          'UAE & GCC',
+          '16 Solutions',
+          'Design to Installation',
+        ].map(fact => (
+          <Card key={fact} style={styles.fact}>
+            <AppText variant="label" style={styles.red}>
+              {fact}
+            </AppText>
+          </Card>
+        ))}
+      </View>
       <AppText>{companyContent.introduction}</AppText>
       <Card>
         <AppText variant="heading">From concept to installation</AppText>
@@ -43,7 +67,7 @@ export function AboutUsScreen({ navigation }: RootScreenProps<'AboutUs'>) {
     </Screen>
   );
 }
-export function ClientsScreen({ navigation }: RootScreenProps<'Clients'>) {
+export function ClientsScreen({ navigation }: { navigation: RootNavigation }) {
   const { width, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const contentWidth = Math.min(width - insets.left - insets.right, 760) - 40;
@@ -165,6 +189,22 @@ export function FAQsScreen() {
   );
 }
 const styles = StyleSheet.create({
+  aboutHero: {
+    minHeight: 300,
+    justifyContent: 'center',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  aboutCopy: { padding: 20, gap: 16, maxWidth: 330 },
+  aboutText: { color: colors.mutedOnDark, fontSize: 14, lineHeight: 23 },
+  red: { color: colors.accentOnDark },
+  facts: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  fact: {
+    flexGrow: 1,
+    flexBasis: '44%',
+    minHeight: 80,
+    justifyContent: 'center',
+  },
   eyebrow: {
     fontSize: 11,
     letterSpacing: 1.8,
@@ -174,7 +214,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   logoCard: {
     height: 110,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.logoPlate,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 12,

@@ -1,3 +1,33 @@
+> Latest splash artwork: the official event photograph now covers the entire screen,
+> including the top. The opaque upper band is removed; a translucent 30–55%
+> overlay preserves readability. The requested 3-second minimum remains unchanged.
+
+> Latest launch behavior: user-requested minimum 3-second splash on each fresh JS
+> launch/full reload. Navigation waits for this timer, entrance completion and
+> preference hydration. Timer is cleared on unmount; ordinary renders do not
+> restart it. This supersedes earlier no-minimum-duration notes below.
+
+> Current launcher: original red C retained, with lowercase **hamp** placed inside
+> its open center, on charcoal (#101012), as explicitly requested by the user.
+> This supersedes the plain Champ-on-white revision below. Android adaptive safe
+> zone remains 48dp artwork on a 108dp canvas. Icon assets require a future rebuild;
+> no build or reinstall performed. See icon-review.png for the updated static preview.
+
+> Latest launcher revision: at the user's explicit request, launcher assets now
+> read **Champ** in bold Manrope, Champion red on white, replacing the standalone C.
+> This is a custom launcher label, not a new official company logo. Android adaptive,
+> round/legacy and all iOS catalog sizes were regenerated. Native launch and in-app
+> official branding remain unchanged. A future native rebuild is required; none
+> was performed. Updated icon-review.png is a static preview.
+
+> Latest revision: reference-aligned upper-centered official wordmark, compact two-line
+> tagline, verified Events photograph in the lower 58%, and a bottom red accent.
+> Launcher icons now use the unchanged red mark on white: larger square/iOS mark,
+> round-safe spacing, and unchanged Android adaptive safe zone. Updated previews
+> below are static approximations, not device screenshots. Icon changes require a
+> future native rebuild; no build or reinstall was performed. Earlier notes below
+> describe the previous charcoal icon and exhibition splash.
+
 > Latest image selection and framing: [Phase 3 visual content update](PHASE3_VISUAL_CONTENT.md). The notes below record the preceding pass.
 
 # Phase 3 corporate branding — 1 November 2026
@@ -117,3 +147,21 @@ Device follow-up: Fast Refresh appearance, landscape/large accessibility text,
 cold/warm/hot launch transitions, image decode timing and reduced motion. After a
 future approved rebuild, verify OEM adaptive masks, native splash handoff, iOS
 launcher masks and iPad launch layouts. No physical-device visual approval claimed.
+
+## On-device launch/gap correction
+
+Background images now have explicit 100% width and height (cover) instead of
+relying on absolute edges with an Image's intrinsic dimensions. SVG gradients
+use explicit percentage endpoints. Onboarding copy scrolls in a bounded flex
+area; its footer does not shrink or add an opaque bottom band.
+
+LaunchGate now waits for the existing 360ms splash entrance completion as well
+as preference hydration. Previously fast hydration unmounted the splash before
+it could be seen. Reduced Motion completes the entrance immediately. No extra
+loading timer or fake progress was added. A full JS reload is necessary to replay
+launch; ordinary Fast Refresh can retain the completed launch state.
+
+Validation: TypeScript, ESLint, 74 tests pass, including early-hydration splash
+regression coverage. Android system launch remains its native bounded icon stage;
+the photographic screen is React Native. Device visual verification is still
+needed; no native build or reinstall performed in this correction.

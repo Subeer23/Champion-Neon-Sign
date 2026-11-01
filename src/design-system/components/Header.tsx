@@ -15,7 +15,9 @@ export function Header({
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={styles.surface}>
       <View style={styles.row}>
-        {onBack && <IconButton label="Go back" onPress={onBack} />}
+        <View style={styles.side}>
+          {onBack && <IconButton label="Go back" onPress={onBack} />}
+        </View>
         <AppText
           variant="heading"
           accessibilityRole="header"
@@ -23,12 +25,13 @@ export function Header({
         >
           {title}
         </AppText>
+        <View style={styles.side} />
       </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  surface: { backgroundColor: colors.surface },
+  surface: { backgroundColor: colors.background },
   row: {
     minHeight: 60,
     flexDirection: 'row',
@@ -39,5 +42,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  title: { flex: 1 },
+  side: { width: 44 },
+  title: { flex: 1, textAlign: 'center', fontSize: 16, lineHeight: 24 },
 });

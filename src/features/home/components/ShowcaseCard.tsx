@@ -1,5 +1,6 @@
+import { SolutionIcon } from '../../../shared/components/SolutionIcon';
 import React from 'react';
-import { Pressable, View, StyleSheet } from 'react-native';
+import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { ContentMedia } from '../../../shared/components/ContentMedia';
 import { AppText } from '../../../design-system/components';
 import { radii, spacing } from '../../../design-system/tokens/spacing';
@@ -9,37 +10,66 @@ export function ShowcaseCard({
   subtitle,
   imageId,
   onPress,
+  compact = false,
+  mediaHeight,
 }: {
   title: string;
   subtitle: string;
   imageId?: string;
   onPress: () => void;
+  compact?: boolean;
+  mediaHeight?: number;
 }) {
+  const { fontScale } = useWindowDimensions();
+  const expanded = fontScale > 1.3;
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`Explore ${title}`}
+      accessibilityHint={compact ? undefined : subtitle}
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        compact && styles.compact,
+        pressed && styles.pressed,
+      ]}
     >
-      <ContentMedia imageId={imageId} title={title} />
-      <View style={styles.body}>
+      {compact ? (
+        <SolutionIcon title={title} />
+      ) : (
+        <ContentMedia imageId={imageId} title={title} height={mediaHeight} />
+      )}
+      <View style={[styles.body, compact && styles.compactBody]}>
         <View style={styles.copy}>
-          <AppText variant="heading" style={styles.title}>
+          <AppText
+            variant="heading"
+            numberOfLines={expanded ? undefined : 2}
+            style={[
+              styles.title,
+              !compact && { minHeight: 44 * fontScale },
+              compact && styles.compactTitle,
+            ]}
+          >
             {title}
           </AppText>
-          <AppText muted style={styles.description}>
-            {subtitle}
-          </AppText>
+          {!compact && (
+            <AppText
+              muted
+              numberOfLines={expanded ? undefined : 2}
+              style={[styles.description, { minHeight: 38 * fontScale }]}
+            >
+              {subtitle}
+            </AppText>
+          )}
         </View>
-        <AppText style={styles.arrow} accessible={false}>
-          ↗
-        </AppText>
       </View>
     </Pressable>
   );
 }
 const styles = StyleSheet.create({
+  compact: { padding: 12, gap: 10, alignItems: 'center', minHeight: 108 },
+  compactBody: { padding: 0 },
+  compactTitle: { fontSize: 12, lineHeight: 18, textAlign: 'center' },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radii.md,
@@ -49,15 +79,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   pressed: { opacity: 0.88, borderColor: colors.primary },
-  title: { fontSize: 19, lineHeight: 27 },
-  description: { fontSize: 14, lineHeight: 22 },
+  title: { fontSize: 16, lineHeight: 22 },
+  description: { fontSize: 12, lineHeight: 19 },
   body: {
-    padding: spacing.md,
+    padding: 12,
     gap: spacing.sm,
     flexDirection: 'row',
     alignItems: 'flex-start',
     flex: 1,
   },
   copy: { flex: 1, gap: spacing.sm },
-  arrow: { color: colors.primary, fontSize: 24, lineHeight: 27 },
 });

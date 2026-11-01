@@ -23,6 +23,7 @@ describe('store and injected dependencies', () => {
     await second.unwrap();
     expect(list).toHaveBeenCalledTimes(1);
     expect(Object.keys(store.getState()).sort()).toEqual([
+      'auth',
       'catalogApi',
       'onboarding',
     ]);

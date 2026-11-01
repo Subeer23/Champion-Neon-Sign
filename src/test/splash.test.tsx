@@ -30,9 +30,7 @@ describe('corporate campaign splash', () => {
     expect(style.width / style.height).toBeCloseTo(900 / 380);
     expect(timing).not.toHaveBeenCalled();
     expect(JSON.stringify(renderer.toJSON())).toContain('Elevate Your Brand');
-    expect(JSON.stringify(renderer.toJSON())).toContain(
-      'Quality Visual Communication Solutions',
-    );
+    expect(JSON.stringify(renderer.toJSON())).toContain('With Champion.');
     await act(() => renderer.unmount());
   });
   it('shows one visible logo before accessibility preference resolves', async () => {

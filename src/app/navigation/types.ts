@@ -8,13 +8,25 @@ export type MainTabParamList = {
   Home: undefined;
   Solutions: undefined;
   Projects: undefined;
-  More: undefined;
+  ClientsTab: undefined;
+  ContactTab: undefined;
 };
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   SolutionDetails: { solutionId: string };
   ProjectDetails: { projectId: string };
   AboutUs: undefined;
+  More: undefined;
+  Profile: undefined;
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  MyQuotations: undefined;
+  QuotationDetails: { quotationId: string };
+  SavedProjects: undefined;
+  Notifications: undefined;
+  AppSettings: undefined;
+  HelpSupport: undefined;
+  LegalDocument: { kind: 'privacy' | 'terms' };
   Clients: undefined;
   Testimonials: undefined;
   FAQs: undefined;
@@ -29,3 +41,8 @@ export type TabScreenProps<T extends keyof MainTabParamList> =
     BottomTabScreenProps<MainTabParamList, T>,
     NativeStackScreenProps<RootStackParamList>
   >;
+
+export type RootNavigation = Pick<
+  RootScreenProps<'MainTabs'>['navigation'],
+  'navigate'
+>;

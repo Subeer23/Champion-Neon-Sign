@@ -17,14 +17,18 @@ import { AppText, Button } from '../../../design-system/components';
 import { colors } from '../../../design-system/tokens/colors';
 import { SplashArtwork } from '../components/SplashArtwork';
 export function splashLogoWidth(availableWidth: number) {
-  return Math.max(0, Math.min(420, availableWidth - 48));
+  return Math.max(0, Math.min(320, availableWidth * 0.7, availableWidth - 48));
 }
 export function SplashScreen({
   error,
   onRetry,
+  onEntranceComplete,
+  onClearDemoData,
 }: {
   error?: string | null;
   onRetry?: () => void;
+  onEntranceComplete?: () => void;
+  onClearDemoData?: () => void;
 }) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -39,6 +43,7 @@ export function SplashScreen({
       animation?.stop();
       if (reduced) {
         progress.setValue(1);
+        onEntranceComplete?.();
         return;
       }
       animation = Animated.timing(progress, {
@@ -46,7 +51,9 @@ export function SplashScreen({
         duration: 360,
         useNativeDriver: true,
       });
-      animation.start();
+      animation.start(({ finished }) => {
+        if (active && finished) onEntranceComplete?.();
+      });
     };
     AccessibilityInfo.isReduceMotionEnabled()
       .then(apply)
@@ -60,7 +67,7 @@ export function SplashScreen({
       animation?.stop();
       subscription.remove();
     };
-  }, [progress]);
+  }, [progress, onEntranceComplete]);
   return (
     <View style={styles.screen}>
       <StatusBar barStyle="light-content" />
@@ -88,14 +95,15 @@ export function SplashScreen({
           contentInsetAdjustmentBehavior="never"
           contentContainerStyle={[
             styles.content,
-            { minHeight: Math.max(0, height - insets.top - insets.bottom) },
+            {
+              minHeight: Math.max(0, height - insets.top - insets.bottom),
+              paddingTop: Math.max(
+                48,
+                (height - insets.top - insets.bottom) * 0.23,
+              ),
+            },
           ]}
         >
-          <View style={styles.masthead}>
-            <View style={styles.rule} />
-            <AppText style={styles.eyebrow}>VISUAL COMMUNICATION</AppText>
-            <AppText style={styles.since}>SINCE 1989</AppText>
-          </View>
           <View style={styles.center}>
             <Animated.View
               testID="splash-logo-entrance"
@@ -130,10 +138,6 @@ export function SplashScreen({
               },
             ]}
           >
-            <View style={styles.signature}>
-              <View style={styles.accent} />
-              <AppText style={styles.eyebrow}>CHAMPION GROUP · UAE</AppText>
-            </View>
             <AppText
               accessibilityRole="header"
               style={[
@@ -142,18 +146,24 @@ export function SplashScreen({
                   styles.compactTagline,
               ]}
             >
-              Elevate Your Brand{'\n'}With Champion.
+              Elevate Your Brand
             </AppText>
-            <AppText style={styles.statement}>
-              Quality Visual Communication Solutions
-            </AppText>
+            <AppText style={styles.statement}>With Champion.</AppText>
           </Animated.View>
+          <View style={styles.accent} />
           {error && (
             <View style={styles.error}>
               <AppText accessibilityRole="alert" style={styles.errorText}>
                 {error}
               </AppText>
               <Button label="Try again" onPress={onRetry} />
+              {onClearDemoData && (
+                <Button
+                  label="Clear damaged demo data"
+                  variant="secondary"
+                  onPress={onClearDemoData}
+                />
+              )}
             </View>
           )}
         </ScrollView>
@@ -162,7 +172,7 @@ export function SplashScreen({
   );
 }
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#101012' },
+  screen: { flex: 1, backgroundColor: colors.dark },
   safe: { flex: 1 },
   content: {
     flexGrow: 1,
@@ -171,48 +181,36 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     alignItems: 'center',
   },
-  masthead: { width: '100%', maxWidth: 520, gap: 6 },
-  rule: { height: 1, backgroundColor: '#FFFFFF30', marginBottom: 12 },
-  eyebrow: {
-    fontFamily: 'Manrope-SemiBold',
-    fontSize: 10,
-    lineHeight: 16,
-    letterSpacing: 1.8,
-    color: '#EEEEEE',
-  },
-  since: {
-    fontSize: 10,
-    lineHeight: 16,
-    letterSpacing: 1.6,
-    color: colors.mutedOnDark,
-  },
   center: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
-    minHeight: 220,
+    paddingBottom: 28,
   },
-  accent: { width: 28, height: 2, backgroundColor: colors.primary },
-  signature: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flexWrap: 'wrap',
+  accent: {
+    width: 96,
+    height: 2,
+    backgroundColor: colors.primary,
+    marginTop: 'auto',
+    marginBottom: 18,
   },
-  lower: { gap: 16, width: '100%', maxWidth: 520 },
+  lower: { gap: 4, width: '100%', maxWidth: 520, paddingBottom: 40 },
   tagline: {
     fontFamily: 'Manrope-Bold',
-    fontSize: 32,
-    lineHeight: 41,
-    letterSpacing: -0.7,
-    color: colors.onDark,
+    fontSize: 15,
+    lineHeight: 22,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    letterSpacing: 1.2,
+    color: colors.primaryStrong,
   },
-  compactTagline: { fontSize: 28, lineHeight: 36 },
+  compactTagline: { fontSize: 13, lineHeight: 20 },
   statement: {
     fontFamily: 'Manrope-Regular',
-    fontSize: 12,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    textAlign: 'center',
     color: colors.mutedOnDark,
   },
   error: { gap: 16, width: '100%', maxWidth: 520, paddingTop: 24 },

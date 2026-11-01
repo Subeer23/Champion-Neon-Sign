@@ -1,3 +1,20 @@
+import {
+  EditProfileScreen,
+  ChangePasswordScreen,
+} from '../../features/account/screens/ProfileFormScreens';
+import {
+  SavedProjectsScreen,
+  MyQuotationsScreen,
+  QuotationDetailsScreen,
+  NotificationsScreen,
+} from '../../features/account/screens/AccountCollectionScreens';
+import {
+  AppSettingsScreen,
+  HelpSupportScreen,
+  LegalDocumentScreen,
+} from '../../features/account/screens/AccountSettingsScreens';
+import { MoreScreen } from '../../features/company/screens/MoreScreen';
+import { ProfileScreen } from '../../features/profile/screens/ProfileScreen';
 import React from 'react';
 import {
   createNativeStackNavigator,
@@ -60,6 +77,49 @@ export function RootNavigator() {
         component={AboutUsScreen}
         options={{ title: 'About Us' }}
       />
+      <Stack.Screen name="More" component={MoreScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MyQuotations"
+        component={MyQuotationsScreen}
+        options={{ title: 'My Quotations' }}
+      />
+      <Stack.Screen
+        name="QuotationDetails"
+        component={QuotationDetailsScreen}
+        options={{ title: 'Quotation Details' }}
+      />
+      <Stack.Screen
+        name="SavedProjects"
+        component={SavedProjectsScreen}
+        options={{ title: 'Saved Projects' }}
+      />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen
+        name="AppSettings"
+        component={AppSettingsScreen}
+        options={{ title: 'App Settings' }}
+      />
+      <Stack.Screen
+        name="HelpSupport"
+        component={HelpSupportScreen}
+        options={{ title: 'Help & Support' }}
+      />
+      <Stack.Screen
+        name="LegalDocument"
+        component={LegalDocumentScreen}
+        options={{ title: 'Company Documents' }}
+      />
       <Stack.Screen name="Clients" component={ClientsScreen} />
       <Stack.Screen name="Testimonials" component={TestimonialsScreen} />
       <Stack.Screen name="FAQs" component={FAQsScreen} />
@@ -71,7 +131,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="GetQuote"
         component={GetQuoteScreen}
-        options={{ title: 'Get a Quote' }}
+        options={{ title: 'Get a Quote', headerShown: false }}
       />
       <Stack.Screen
         name="GalleryViewer"

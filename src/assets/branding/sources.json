@@ -8,12 +8,12 @@
       500
     ],
     "sha256": "345f86cb364acf4ff8c7137c14f9370c5fb89e8758c53f1aaeb26633f956674c",
-    "treatment": "Original pixels retained; proportionally resized and placed on charcoal. Android static splash vector traces the alpha boundary with 0.45px maximum contour simplification; no letterform redesign."
+    "treatment": "Unchanged official red mark on white launcher field; 76% square/iOS sizing, 68% round sizing, adaptive foreground retained within safe circle. Native launch stays charcoal with the official mark."
   },
   "photo": {
-    "url": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27-1.webp",
-    "localFile": "../images/exhibition.jpg",
-    "treatment": "Existing verified exhibition image; full image contained within a cinematic background band, with live SVG charcoal/red overlays. No portrait crop, stock or AI imagery."
+    "url": "https://championgroup.ae/wp-content/uploads/2025/07/2024-03-27.webp",
+    "localFile": "../images/events-hero.jpg",
+    "treatment": "Verified event photograph cover-fills the full splash, including the top. Translucent 30\u201355% gradient preserves photo visibility; no solid black upper band."
   },
   "wordmark": {
     "url": "https://championgroup.ae/wp-content/uploads/2025/07/Champion-Group-scaled.png",
@@ -25,5 +25,14 @@
     "headline": "Elevate Your Brand With Champion.",
     "support": "Quality Visual Communication Solutions",
     "established": "Since 1989"
+  },
+  "launcher": {
+    "text": "hamp",
+    "requestedBy": "User requested retaining the original red C and placing hamp inside it, reading Champ together.",
+    "font": "Bundled Manrope-Bold.ttf",
+    "foreground": "#D31217",
+    "background": "#101012",
+    "note": "User-requested composite launcher treatment. Original C silhouette and in-app official wordmark unchanged.",
+    "adaptiveArtworkWidthDp": 48
   }
 }

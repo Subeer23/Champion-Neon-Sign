@@ -10,10 +10,14 @@ export function ContentMedia({
   imageId,
   title,
   detail = false,
+  height,
+  resizeMode = 'contain',
 }: {
   imageId?: string;
   title: string;
   detail?: boolean;
+  height?: number;
+  resizeMode?: 'cover' | 'contain';
 }) {
   const image = getImage(imageId);
   const dimensions = image ? Image.resolveAssetSource(image) : undefined;
@@ -24,12 +28,14 @@ export function ContentMedia({
   const icon = solutionIcons[title.toUpperCase()];
   return image ? (
     <View style={styles.frame}>
-      <BrandImage
-        source={image}
-        accessibilityLabel={title}
-        style={[styles.image, { aspectRatio }]}
-        resizeMode="contain"
-      />
+      <View style={[styles.viewport, height ? { height } : { aspectRatio }]}>
+        <BrandImage
+          source={image}
+          accessibilityLabel={title}
+          style={styles.photo}
+          resizeMode={resizeMode}
+        />
+      </View>
       {imageId === 'solution-signage' && (
         <AppText variant="caption" muted style={styles.note}>
           Official website signage mockup
@@ -63,7 +69,12 @@ export function ContentMedia({
   );
 }
 const styles = StyleSheet.create({
+  viewport: { width: '100%', overflow: 'hidden' },
+  photo: { ...StyleSheet.absoluteFill, width: '100%', height: '100%' },
   frame: {
+    width: '100%',
+    minWidth: 0,
+    flexShrink: 0,
     borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: colors.dark,

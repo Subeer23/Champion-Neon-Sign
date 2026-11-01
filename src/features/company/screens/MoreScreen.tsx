@@ -1,10 +1,15 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import type { TabScreenProps } from '../../../app/navigation/types';
+import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { Screen } from '../../../shared/components/Screen';
 import { colors } from '../../../design-system/tokens/colors';
 const destinations = [
+  {
+    route: 'Profile',
+    title: 'Profile',
+    detail: 'Demo account and app settings',
+  },
   {
     route: 'AboutUs',
     title: 'About Us',
@@ -23,7 +28,7 @@ const destinations = [
     detail: 'Talk to our team or plan a visit',
   },
 ] as const;
-export function MoreScreen({ navigation }: TabScreenProps<'More'>) {
+export function MoreScreen({ navigation }: RootScreenProps<'More'>) {
   return (
     <Screen>
       <AppText variant="caption" style={styles.eyebrow}>

@@ -13,12 +13,14 @@ interface Props extends Omit<PressableProps, 'children' | 'style'> {
   variant?: 'primary' | 'secondary';
   loading?: boolean;
   compact?: boolean;
+  round?: boolean;
 }
 export function Button({
   label,
   variant = 'primary',
   loading = false,
   compact = false,
+  round = false,
   disabled,
   ...props
 }: Props) {
@@ -26,11 +28,13 @@ export function Button({
     <Pressable
       {...props}
       accessibilityRole="button"
+      accessibilityLabel={props.accessibilityLabel ?? label}
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       disabled={disabled || loading}
       style={({ pressed }) => [
         styles.base,
         compact && styles.compact,
+        round && styles.round,
         styles[variant],
         (pressed || disabled || loading) && styles.dimmed,
       ]}
@@ -46,7 +50,7 @@ export function Button({
           variant === 'primary' ? styles.primaryText : styles.secondaryText
         }
       >
-        {label}
+        {round ? '→' : label}
       </AppText>
     </Pressable>
   );
@@ -62,6 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.sm,
   },
+  round: { width: 52, height: 52, borderRadius: 26, paddingHorizontal: 0 },
   compact: { minHeight: 44, paddingHorizontal: 12, paddingVertical: 8 },
   primary: { backgroundColor: colors.primary },
   secondary: {
@@ -70,6 +75,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   primaryText: { color: colors.onPrimary, textAlign: 'center', flexShrink: 1 },
-  secondaryText: { color: colors.dark, textAlign: 'center', flexShrink: 1 },
+  secondaryText: { color: colors.text, textAlign: 'center', flexShrink: 1 },
   dimmed: { opacity: 0.65 },
 });

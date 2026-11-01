@@ -1,3 +1,4 @@
+import { MediaCarousel } from '../../../shared/components/MediaCarousel';
 import React from 'react';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
@@ -29,7 +30,17 @@ export function SolutionDetailsScreen({
       />
       {data && (
         <>
-          <ContentMedia detail imageId={data.imageId} title={data.title} />
+          {data.imageId ? (
+            <MediaCarousel
+              imageIds={[
+                data.imageId,
+                ...related.flatMap(item => item.imageIds),
+              ]}
+              title={data.title}
+            />
+          ) : (
+            <ContentMedia title={data.title} />
+          )}
           <AppText variant="caption" muted>
             CHAMPION GROUP / SOLUTIONS
           </AppText>

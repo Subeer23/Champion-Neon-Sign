@@ -18,6 +18,9 @@ test('renders correctly', async () => {
   await ReactTestRenderer.act(() => {
     renderer = ReactTestRenderer.create(<App store={store} />);
   });
+  await ReactTestRenderer.act(async () => {
+    jest.runOnlyPendingTimers();
+  });
   expect(renderer!.root.findByType(HomeScreen)).toBeDefined();
   await ReactTestRenderer.act(() => {
     renderer!.unmount();
