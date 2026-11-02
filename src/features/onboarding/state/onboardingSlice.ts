@@ -12,7 +12,11 @@ const initialState: OnboardingState = {
   saving: false,
   error: null,
 };
-type ThunkConfig = { extra: AppDependencies; rejectValue: string };
+type ThunkConfig = {
+  extra: AppDependencies;
+  rejectValue: string;
+  state: { onboarding: OnboardingState };
+};
 export const hydrateOnboarding = createAsyncThunk<boolean, void, ThunkConfig>(
   'onboarding/hydrate',
   async (_, { extra, rejectWithValue }) => {
@@ -22,19 +26,27 @@ export const hydrateOnboarding = createAsyncThunk<boolean, void, ThunkConfig>(
       return rejectWithValue('Preferences could not be loaded.');
     }
   },
+  {
+    condition: (_, { getState }) => getState().onboarding.status !== 'loading',
+  },
 );
 export const saveOnboardingCompleted = createAsyncThunk<
   boolean,
   boolean,
   ThunkConfig
->('onboarding/save', async (completed, { extra, rejectWithValue }) => {
-  try {
-    await extra.preferences.setOnboardingCompleted(completed);
-    return completed;
-  } catch {
-    return rejectWithValue('Preferences could not be saved.');
-  }
-});
+>(
+  'onboarding/save',
+  async (completed, { extra, rejectWithValue }) => {
+    try {
+      await extra.preferences.setOnboardingCompleted(completed);
+      return completed;
+    } catch {
+      return rejectWithValue('Preferences could not be saved.');
+    }
+  },
+  { condition: (_, { getState }) => !getState().onboarding.saving },
+);
+
 const onboardingSlice = createSlice({
   name: 'onboarding',
   initialState,

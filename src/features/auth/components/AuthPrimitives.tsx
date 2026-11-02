@@ -1,3 +1,4 @@
+import { usePressGuard } from '../../../shared/hooks/usePressGuard';
 import React, { useState, type PropsWithChildren } from 'react';
 import {
   KeyboardAvoidingView,
@@ -108,9 +109,10 @@ export function TextLink({
   label: string;
   onPress: () => void;
 }) {
+  const guardedPress = usePressGuard(onPress);
   return (
     <Pressable
-      onPress={onPress}
+      onPress={guardedPress}
       accessibilityRole="button"
       accessibilityLabel={label}
       style={styles.link}

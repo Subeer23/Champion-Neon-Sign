@@ -1,7 +1,8 @@
+import { usePressGuard } from '../hooks/usePressGuard';
 import { SolutionIcon } from './SolutionIcon';
 import { BrandImage } from '../../design-system/components/BrandImage';
 import { getImage } from '../../assets/images';
-import React, { useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import {
   FlatList,
   View,
@@ -25,6 +26,80 @@ export interface CatalogItem {
   summary: string;
   imageId?: string;
 }
+const catalogKey = (item: CatalogItem) => item.id;
+const CatalogCard = memo(function CatalogCardView({
+  item,
+  columns,
+  solutionLayout,
+  roomySolution,
+  available,
+  fontScale,
+  verb,
+  onSelect,
+}: {
+  item: CatalogItem;
+  columns: number;
+  solutionLayout: boolean;
+  roomySolution: boolean;
+  available: number;
+  fontScale: number;
+  verb: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <View style={[styles.cell, columns === 2 ? styles.half : styles.full]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${verb} ${item.title}`}
+        onPress={() => onSelect(item.id)}
+        style={({ pressed }) => [
+          styles.card,
+          solutionLayout && styles.solutionRow,
+          pressed && styles.pressed,
+        ]}
+      >
+        {solutionLayout ? (
+          <SolutionIcon title={item.title} size={34} />
+        ) : (
+          <ContentMedia
+            imageId={item.imageId}
+            title={item.title}
+            height={Math.min(240, (available / columns - 8) * 0.72)}
+          />
+        )}
+        <View style={[styles.copy, solutionLayout && styles.solutionCopy]}>
+          <AppText
+            variant="heading"
+            numberOfLines={fontScale > 1.3 ? undefined : 2}
+            style={[
+              styles.cardTitle,
+              !solutionLayout && { minHeight: 44 * fontScale },
+            ]}
+          >
+            {item.title}
+          </AppText>
+          <AppText
+            muted
+            numberOfLines={fontScale > 1.3 ? undefined : 3}
+            style={styles.summary}
+          >
+            {item.summary}
+          </AppText>
+          <AppText variant="label" style={styles.link}>
+            {verb} details ↗
+          </AppText>
+        </View>
+        {solutionLayout && roomySolution && getImage(item.imageId) && (
+          <BrandImage
+            source={getImage(item.imageId)!}
+            resizeMode="contain"
+            style={styles.solutionImage}
+          />
+        )}
+      </Pressable>
+    </View>
+  );
+});
 export function CatalogList({
   items,
   loading,
@@ -60,13 +135,37 @@ export function CatalogList({
     () => filterContent(items, query, category),
     [items, query, category],
   );
+  const select = usePressGuard(onSelect);
+  const renderItem = useCallback(
+    ({ item }: { item: CatalogItem }) => (
+      <CatalogCard
+        item={item}
+        columns={columns}
+        solutionLayout={solutionLayout}
+        roomySolution={roomySolution}
+        available={available}
+        fontScale={fontScale}
+        verb={verb}
+        onSelect={select}
+      />
+    ),
+    [
+      columns,
+      solutionLayout,
+      roomySolution,
+      available,
+      fontScale,
+      verb,
+      select,
+    ],
+  );
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safe}>
       <FlatList
         key={columns}
         numColumns={columns}
         data={filtered}
-        keyExtractor={item => item.id}
+        keyExtractor={catalogKey}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         contentInsetAdjustmentBehavior="never"
@@ -131,63 +230,7 @@ export function CatalogList({
             </View>
           ) : undefined
         }
-        renderItem={({ item }) => (
-          <View
-            style={[styles.cell, columns === 2 ? styles.half : styles.full]}
-          >
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`${verb} ${item.title}`}
-              onPress={() => onSelect(item.id)}
-              style={({ pressed }) => [
-                styles.card,
-                solutionLayout && styles.solutionRow,
-                pressed && styles.pressed,
-              ]}
-            >
-              {solutionLayout ? (
-                <SolutionIcon title={item.title} size={34} />
-              ) : (
-                <ContentMedia
-                  imageId={item.imageId}
-                  title={item.title}
-                  height={Math.min(240, (available / columns - 8) * 0.72)}
-                />
-              )}
-              <View
-                style={[styles.copy, solutionLayout && styles.solutionCopy]}
-              >
-                <AppText
-                  variant="heading"
-                  numberOfLines={fontScale > 1.3 ? undefined : 2}
-                  style={[
-                    styles.cardTitle,
-                    !solutionLayout && { minHeight: 44 * fontScale },
-                  ]}
-                >
-                  {item.title}
-                </AppText>
-                <AppText
-                  muted
-                  numberOfLines={fontScale > 1.3 ? undefined : 3}
-                  style={styles.summary}
-                >
-                  {item.summary}
-                </AppText>
-                <AppText variant="label" style={styles.link}>
-                  {verb} details ↗
-                </AppText>
-              </View>
-              {solutionLayout && roomySolution && getImage(item.imageId) && (
-                <BrandImage
-                  source={getImage(item.imageId)!}
-                  resizeMode="contain"
-                  style={styles.solutionImage}
-                />
-              )}
-            </Pressable>
-          </View>
-        )}
+        renderItem={renderItem}
       />
     </SafeAreaView>
   );

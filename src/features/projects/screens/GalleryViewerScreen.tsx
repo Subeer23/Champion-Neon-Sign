@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, View, StyleSheet, useWindowDimensions } from 'react-native';
 import {
   SafeAreaView,
@@ -22,13 +22,16 @@ export function GalleryViewerScreen({
   navigation,
 }: RootScreenProps<'GalleryViewer'>) {
   const { data, isLoading, isError, refetch } = useGetProjectQuery(
-    route.params.projectId,
+    route.params?.projectId ?? '',
   );
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const pageWidth = width - insets.left - insets.right;
-  const ids = data?.imageIds.filter(id => getImage(id)) ?? [];
-  const [index, setIndex] = useState(route.params.initialIndex ?? 0);
+  const pageWidth = Math.max(1, width - insets.left - insets.right);
+  const ids = useMemo(
+    () => [...new Set(data?.imageIds ?? [])].filter(id => getImage(id)),
+    [data?.imageIds],
+  );
+  const [index, setIndex] = useState(route.params?.initialIndex ?? 0);
   const current = clampGalleryIndex(index, ids.length);
   return (
     <SafeAreaView
@@ -59,7 +62,7 @@ export function GalleryViewerScreen({
       )}
       {ids.length > 0 && (
         <FlatList
-          key={`${pageWidth}-${ids.length}`}
+          key={`${route.params?.projectId}-${pageWidth}-${ids.join(',')}`}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}

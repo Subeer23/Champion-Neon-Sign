@@ -1,3 +1,4 @@
+import type { IconName } from '../../../shared/components/LineIcon';
 import React, { memo, useCallback } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { AppText } from '../../../design-system/components';
@@ -5,6 +6,30 @@ import { colors } from '../../../design-system/tokens/colors';
 import { FormInput } from '../../auth/components/AuthPrimitives';
 import { solutionFixtures } from '../../../mocks/fixtures/solutions';
 import type { QuoteFormData } from '../domain/Quote';
+
+const fieldPresentation: Partial<
+  Record<keyof QuoteFormData, { icon: IconName; placeholder: string }>
+> = {
+  title: {
+    icon: 'briefcase',
+    placeholder: 'e.g. Illuminated storefront signage',
+  },
+  description: {
+    icon: 'file-text',
+    placeholder: 'Describe your project, size and materials',
+  },
+  location: { icon: 'pin', placeholder: 'e.g. Dubai, UAE' },
+  budget: { icon: 'wallet', placeholder: 'e.g. AED 10,000–25,000' },
+  completionDate: { icon: 'calendar', placeholder: 'YYYY-MM-DD' },
+  additional: {
+    icon: 'clipboard',
+    placeholder: 'Any installation or design preferences?',
+  },
+  name: { icon: 'user', placeholder: 'Enter your full name' },
+  company: { icon: 'building', placeholder: 'Enter your company name' },
+  email: { icon: 'mail', placeholder: 'name@example.com' },
+  phone: { icon: 'phone', placeholder: '+971 50 123 4567' },
+};
 
 export const QuoteField = memo(function QuoteFieldView({
   field,
@@ -28,6 +53,8 @@ export const QuoteField = memo(function QuoteFieldView({
   return (
     <FormInput
       label={label}
+      icon={fieldPresentation[field]?.icon ?? 'file-text'}
+      placeholder={fieldPresentation[field]?.placeholder ?? label}
       value={value}
       editable={editable}
       onChangeText={change}

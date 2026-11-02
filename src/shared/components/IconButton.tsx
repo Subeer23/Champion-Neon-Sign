@@ -1,3 +1,4 @@
+import { usePressGuard } from '../hooks/usePressGuard';
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -13,11 +14,12 @@ export function IconButton({
   onPress: () => void;
   dark?: boolean;
 }) {
+  const guardedPress = usePressGuard(onPress);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      onPress={onPress}
+      onPress={guardedPress}
       style={({ pressed }) => [
         styles.button,
         dark ? styles.dark : styles.light,

@@ -16,6 +16,7 @@ export const fastTestHasher: PasswordHasher = {
 };
 export function createDemoTestStorage(values = new Map<string, string>()) {
   const storage: DemoStorage = {
+    getAllKeys: jest.fn(async () => [...values.keys()]),
     getItem: jest.fn(async key => values.get(key) ?? null),
     setItem: jest.fn(async (key, value) => {
       values.set(key, value);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-/** Passwords remain in screen/repository calls, never Redux actions. */
+/** Work may finish after leaving a screen: check isActive before UI/navigation.
+ * Passwords remain in screen/repository calls, never Redux actions. */
 export function useAsyncAction() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -11,13 +12,13 @@ export function useAsyncAction() {
       mounted.current = false;
     };
   }, []);
-  async function run(work: () => Promise<void>) {
-    if (lock.current) return;
+  async function run(work: (isActive: () => boolean) => Promise<void>) {
+    if (lock.current || !mounted.current) return;
     lock.current = true;
     setBusy(true);
     setError(null);
     try {
-      await work();
+      await work(() => mounted.current);
     } catch (e) {
       if (mounted.current)
         setError(

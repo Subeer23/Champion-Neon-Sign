@@ -28,6 +28,7 @@ import { projectFixtures } from '../../../mocks/fixtures/projects';
 import { solutionFixtures } from '../../../mocks/fixtures/solutions';
 export interface DemoStorage {
   getItem(key: string): Promise<string | null>;
+  getAllKeys?(): Promise<string[]>;
   setItem(key: string, value: string): Promise<void>;
   removeItem(key: string): Promise<void>;
 }
@@ -646,7 +647,13 @@ export class LocalDemoRepository implements AuthRepository {
   }
   async clearDemoData() {
     await this.serial(async () => {
+      let keys: string[];
       try {
+        keys = this.storage.getAllKeys
+          ? (await this.storage.getAllKeys()).filter(key =>
+              key.startsWith('champion-quotes:v1:'),
+            )
+          : [...this.quoteDocuments.values()].map(document => document.key);
         await this.storage.setItem(
           DEMO_DATABASE_KEY,
           JSON.stringify(freshDatabase()),
@@ -654,21 +661,23 @@ export class LocalDemoRepository implements AuthRepository {
       } catch {
         throw new Error('Demo data could not be cleared. Please retry.');
       }
-      const keys =
-        this.database?.accounts.flatMap(a =>
-          a.quoteKey ? [a.quoteKey] : [],
-        ) ?? [];
       this.quoteDocuments.clear();
       this.persistedMetadata = JSON.stringify(freshDatabase());
+      this.hasStoredDatabase = true;
       this.publish(freshDatabase());
-      await Promise.all(
-        [...keys, 'champion-quotes:v1:guest-auth-handoff'].map(key =>
-          this.storage.removeItem(key).catch(() => undefined),
+      this.clear();
+      const results = await Promise.allSettled(
+        [...new Set([...keys, 'champion-quotes:v1:guest-auth-handoff'])].map(
+          key => this.storage.removeItem(key),
         ),
       );
-      this.clear();
+      if (results.some(result => result.status === 'rejected'))
+        throw new Error(
+          'Accounts were reset, but some local files could not be removed. Retry Clear demo data.',
+        );
     });
   }
+
   clear() {
     this.challenge = null;
   }

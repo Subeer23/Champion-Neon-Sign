@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { Screen } from '../../../shared/components/Screen';
-import { useDemoSnapshot } from '../../auth/data/AuthRepositoryProvider';
+import { useDemoSelector } from '../../auth/data/AuthRepositoryProvider';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import { selectAuthEntry, setDemoAccess } from '../../auth/state/authSlice';
 import {
@@ -13,8 +13,12 @@ import {
   accountStyles as s,
 } from '../../account/components/AccountPrimitives';
 export function ProfileScreen({ navigation }: RootScreenProps<'Profile'>) {
-  const { profile, savedProjects, quotations, notifications } =
-    useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile);
+  const savedCount = useDemoSelector(snapshot => snapshot.savedProjects.length);
+  const quoteCount = useDemoSelector(snapshot => snapshot.quotations.length);
+  const unreadCount = useDemoSelector(
+    snapshot => snapshot.notifications.filter(item => !item.read).length,
+  );
   const dispatch = useAppDispatch();
   const { saving, error } = useAppSelector(state => state.auth);
   return (
@@ -60,19 +64,17 @@ export function ProfileScreen({ navigation }: RootScreenProps<'Profile'>) {
             />
             <AccountRow
               title="My Quotations"
-              detail={`${quotations.length} local demo requests`}
+              detail={`${quoteCount} local demo requests`}
               onPress={() => navigation.navigate('MyQuotations')}
             />
             <AccountRow
               title="Saved Projects"
-              detail={`${savedProjects.length} saved`}
+              detail={`${savedCount} saved`}
               onPress={() => navigation.navigate('SavedProjects')}
             />
             <AccountRow
               title="Notifications"
-              detail={`${
-                notifications.filter(n => !n.read).length
-              } unread · Local only`}
+              detail={`${unreadCount} unread · Local only`}
               onPress={() => navigation.navigate('Notifications')}
             />
           </Card>

@@ -1,3 +1,4 @@
+import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View, ActivityIndicator } from 'react-native';
 import type { RootNavigation } from '../../../app/navigation/types';
@@ -12,22 +13,22 @@ export function ContactUsScreen({
 }: {
   navigation: RootNavigation;
 }) {
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
+  const request = useAsyncAction();
+  const [label, setLabel] = useState<string | null>(null);
+  const busy = request.busy ? label : null;
+  const error = request.error;
   const contact = companyContent.contact;
-  async function open(label: string, url: string) {
-    if (busy) return;
-    setError(null);
-    setBusy(label);
-    try {
-      await openContactLink(url);
-    } catch {
-      setError(
-        'Unable to open this action. Use the contact details below or try again.',
-      );
-    } finally {
-      setBusy(null);
-    }
+  function open(nextLabel: string, url: string) {
+    return request.run(async () => {
+      setLabel(nextLabel);
+      try {
+        await openContactLink(url);
+      } catch {
+        throw new Error(
+          'Unable to open this action. Use the contact details below or try again.',
+        );
+      }
+    });
   }
   const actions: {
     label: string;

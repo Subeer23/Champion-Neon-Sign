@@ -6,7 +6,7 @@ import { colors } from '../../../design-system/tokens/colors';
 import { AuthFrame, FormInput } from '../../auth/components/AuthPrimitives';
 import {
   useAuthRepository,
-  useDemoSnapshot,
+  useDemoSelector,
 } from '../../auth/data/AuthRepositoryProvider';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import { Avatar, GuestPrompt } from '../components/AccountPrimitives';
@@ -14,7 +14,7 @@ import type { DemoProfile } from '../domain/models';
 export function EditProfileScreen({
   navigation,
 }: RootScreenProps<'EditProfile'>) {
-  const { profile } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile);
   const repository = useAuthRepository();
   const action = useAsyncAction();
   const [name, setName] = useState(profile?.name ?? '');
@@ -100,9 +100,10 @@ export function EditProfileScreen({
             label="Save Profile"
             loading={action.busy}
             onPress={() =>
-              action.run(async () => {
+              action.run(async isActive => {
                 setSuccess(false);
                 await repository.updateProfile({ name, email, phone, avatar });
+                if (!isActive() || navigation.isFocused?.() === false) return;
                 setSuccess(true);
               })
             }
@@ -115,7 +116,7 @@ export function EditProfileScreen({
 export function ChangePasswordScreen({
   navigation,
 }: RootScreenProps<'ChangePassword'>) {
-  const { profile } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile);
   const repository = useAuthRepository();
   const action = useAsyncAction();
   const [current, setCurrent] = useState('');
@@ -178,10 +179,11 @@ export function ChangePasswordScreen({
             label="Change Demo Password"
             loading={action.busy}
             onPress={() =>
-              action.run(async () => {
+              action.run(async isActive => {
                 setSuccess(false);
                 if (next !== confirm) throw new Error('Passwords must match.');
                 await repository.changePassword(current, next);
+                if (!isActive() || navigation.isFocused?.() === false) return;
                 setCurrent('');
                 setNext('');
                 setConfirm('');

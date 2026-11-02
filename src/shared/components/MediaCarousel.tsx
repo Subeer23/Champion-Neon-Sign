@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -23,10 +23,24 @@ export function MediaCarousel({
     1,
     Math.min(760, width - insets.left - insets.right) - 40,
   );
-  const ids = [...new Set(imageIds)].filter(id => getImage(id));
+  const ids = useMemo(
+    () => [...new Set(imageIds)].filter(id => getImage(id)),
+    [imageIds],
+  );
   const [index, setIndex] = useState(0);
   const list = useRef<FlatList<string>>(null);
   const current = Math.min(index, Math.max(0, ids.length - 1));
+  const renderItem = useCallback(
+    ({ item, index: i }: { item: string; index: number }) => (
+      <BrandImage
+        source={getImage(item)!}
+        resizeMode="contain"
+        accessibilityLabel={`${title} photo ${i + 1}`}
+        style={{ width: pageWidth, height: Math.min(360, pageWidth * 0.8) }}
+      />
+    ),
+    [pageWidth, title],
+  );
   if (!ids.length) return null;
   return (
     <View style={styles.container}>
@@ -58,14 +72,7 @@ export function MediaCarousel({
             ),
           )
         }
-        renderItem={({ item, index: i }) => (
-          <BrandImage
-            source={getImage(item)!}
-            resizeMode="contain"
-            accessibilityLabel={`${title} photo ${i + 1}`}
-            style={{ width: pageWidth, height: Math.min(360, pageWidth * 0.8) }}
-          />
-        )}
+        renderItem={renderItem}
       />
       <View style={styles.pagination}>
         {ids.map((id, i) => (
@@ -102,8 +109,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   touch: {
-    width: 32,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },

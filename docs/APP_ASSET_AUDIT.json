@@ -1,0 +1,205 @@
+[
+  {
+    "path": "src/assets/branding/official-mark.png",
+    "bytes": 8065,
+    "width": 500,
+    "height": 500,
+    "sha256": "345f86cb364acf4ff8c7137c14f9370c5fb89e8758c53f1aaeb26633f956674c"
+  },
+  {
+    "path": "src/assets/images/adnoc.jpg",
+    "bytes": 7909,
+    "width": 300,
+    "height": 150,
+    "sha256": "fece4617ffc65af51939620fed874542583b6af3ddd5943d6cddea7dedfc2d10"
+  },
+  {
+    "path": "src/assets/images/branding.jpg",
+    "bytes": 143810,
+    "width": 1024,
+    "height": 767,
+    "sha256": "871a2491273f0681a9c42c194d3a3918e5cfdc7ecbde1614adecc93d23c97884"
+  },
+  {
+    "path": "src/assets/images/client-canadian-university-dubai.png",
+    "bytes": 28197,
+    "width": 400,
+    "height": 160,
+    "sha256": "860a9af6cef9e35edfe40e535e1e2f83747e5bd1bc5b197a94f107b692398302"
+  },
+  {
+    "path": "src/assets/images/client-emax.png",
+    "bytes": 19476,
+    "width": 400,
+    "height": 125,
+    "sha256": "095b52439a216b9f1c09a39283bf98f6bfbbc113903ae3c4f22abbda62379c8f"
+  },
+  {
+    "path": "src/assets/images/client-enoc.png",
+    "bytes": 28001,
+    "width": 400,
+    "height": 179,
+    "sha256": "1acb94f91c91c72fde5a15d4d9671dafa2e767732125c217ace0f25714aaddb6"
+  },
+  {
+    "path": "src/assets/images/client-general.png",
+    "bytes": 10855,
+    "width": 400,
+    "height": 87,
+    "sha256": "28ffca4d3a4939a637179dcf4b47ab7649539e37b795175f07dda3594a9e215d"
+  },
+  {
+    "path": "src/assets/images/client-gree.png",
+    "bytes": 16353,
+    "width": 400,
+    "height": 79,
+    "sha256": "82e63cff1d8e168e444824d8329227d297d72afb0eba1572d3003f7f31b1240c"
+  },
+  {
+    "path": "src/assets/images/client-mister-baker.png",
+    "bytes": 45813,
+    "width": 400,
+    "height": 208,
+    "sha256": "e11ca0f715cb8006d34ab6dae1bdb7a427f8dea6d42bf3b48efa26b719aab0b9"
+  },
+  {
+    "path": "src/assets/images/events-hero.jpg",
+    "bytes": 161615,
+    "width": 1024,
+    "height": 576,
+    "sha256": "3a148089aa3b9f6414b8ddda5baf8637761c9b2c6b89927afafdf299b59b9ccc"
+  },
+  {
+    "path": "src/assets/images/events-illustration.jpg",
+    "bytes": 168086,
+    "width": 1024,
+    "height": 682,
+    "sha256": "e27cfbfc2202f20dad1659a16e91d089dbd559c2584b69a80af1b661f306b2bc"
+  },
+  {
+    "path": "src/assets/images/events-showcase.jpg",
+    "bytes": 151295,
+    "width": 1024,
+    "height": 682,
+    "sha256": "a25b8bbf8cf439a699bd5914f5b580dc7ed79b560678da70358ea2f3e1ad4073"
+  },
+  {
+    "path": "src/assets/images/exhibition-stand-a.jpg",
+    "bytes": 120922,
+    "width": 1024,
+    "height": 576,
+    "sha256": "ae831959f345197658bc80c1ffb42014ea81e03954cd2cf9d607f71d6919f375"
+  },
+  {
+    "path": "src/assets/images/exhibition-stand-b.jpg",
+    "bytes": 132548,
+    "width": 1024,
+    "height": 576,
+    "sha256": "3de6c4e0eeabe09f64098264bc79b433e39e2265fcc11516720314dd086c0516"
+  },
+  {
+    "path": "src/assets/images/exhibition.jpg",
+    "bytes": 225516,
+    "width": 1024,
+    "height": 768,
+    "sha256": "dd5abf6c5221d4cf97cd86eef18528dc84bae15b953f28a40ca5a97557b6d69d"
+  },
+  {
+    "path": "src/assets/images/experience.png",
+    "bytes": 295239,
+    "width": 1024,
+    "height": 524,
+    "sha256": "9d6bc511cc3d492ada23e5fff97091ce9dbc05a0e595e02eedd8b92743926fbb"
+  },
+  {
+    "path": "src/assets/images/jumbo.png",
+    "bytes": 13825,
+    "width": 320,
+    "height": 66,
+    "sha256": "76381a903a6571f85f327d7d2e93ee0f3aeefd9e7e785cc3ca0bb8522808697e"
+  },
+  {
+    "path": "src/assets/images/led-display.jpg",
+    "bytes": 128375,
+    "width": 576,
+    "height": 1024,
+    "sha256": "717b55fa9abff143240819a71669abd3b19b99951fe04e7591b5e8a0537d46eb"
+  },
+  {
+    "path": "src/assets/images/led-portrait.jpg",
+    "bytes": 71108,
+    "width": 812,
+    "height": 1024,
+    "sha256": "ab1de00236ad9fee32df4a36cbafd42f6346abfb8430d6674feee0bc0ce75e6f"
+  },
+  {
+    "path": "src/assets/images/led.jpg",
+    "bytes": 56836,
+    "width": 1024,
+    "height": 576,
+    "sha256": "4dbeb5af89ff3cfa184db49a53fc676f4dac0c3a2b304543b3fd984ed9f1af99"
+  },
+  {
+    "path": "src/assets/images/logo.png",
+    "bytes": 89138,
+    "width": 900,
+    "height": 380,
+    "sha256": "d131ec7150b11f7e11bd3fe03d9abd7ba43a718b5bcf61cd87d5e8739840e4f6"
+  },
+  {
+    "path": "src/assets/images/solution-signage.jpg",
+    "bytes": 165898,
+    "width": 1024,
+    "height": 688,
+    "sha256": "8ff8b12e1df36d8e563de45bb2236982bf00f2478090d32508bf4b9279e489f6"
+  },
+  {
+    "path": "src/assets/images/super-general.jpg",
+    "bytes": 11200,
+    "width": 264,
+    "height": 63,
+    "sha256": "4aaef89425baad24d89448584ac31d1eb2bf99eeeb904860c2c5fbd8bb93a749"
+  },
+  {
+    "path": "src/assets/images/testimonial-1.png",
+    "bytes": 4773,
+    "width": 144,
+    "height": 144,
+    "sha256": "2c6e5d86b54f58b055d05baa8222bf6bccad7ec3c46459ba364263bb721195ab"
+  },
+  {
+    "path": "src/assets/images/testimonial-2.png",
+    "bytes": 12050,
+    "width": 72,
+    "height": 72,
+    "sha256": "8aa7e45126e92a8eb896a8d2887aec951d0c23c114c565026b099d17ab586ef2"
+  },
+  {
+    "path": "src/assets/images/testimonial-3.png",
+    "bytes": 8534,
+    "width": 144,
+    "height": 144,
+    "sha256": "2624b306dee3ef1ca178f91bfbfda0ef49b55bf7a0c6d1181bf94bcd73a9d35a"
+  },
+  {
+    "path": "src/assets/images/testimonial-4.png",
+    "bytes": 29492,
+    "width": 144,
+    "height": 144,
+    "sha256": "a4e40c5d55b71d76848a059d161d459129dbc19e8d100e7b59abc31b6aea8b71"
+  },
+  {
+    "path": "src/assets/images/testimonial-5.png",
+    "bytes": 11894,
+    "width": 160,
+    "height": 160,
+    "sha256": "6525cfce3eb4b260f41281fb04379a0018ecacfc66fa6b291e22e75a5a91d795"
+  },
+  {
+    "path": "src/assets/images/testimonial-6.png",
+    "bytes": 4808,
+    "width": 144,
+    "height": 144,
+    "sha256": "0b88cd153bb422c4d3c145dc34559c73b5b3d014b3f2ccf2b96281a18aa5f13f"
+  }
+]

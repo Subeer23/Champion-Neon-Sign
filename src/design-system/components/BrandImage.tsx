@@ -12,7 +12,9 @@ function ImageContent({
   onError,
   ...props
 }: ImageProps) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(
+    !props.source || (Array.isArray(props.source) && props.source.length === 0),
+  );
   if (failed) {
     return (
       <View style={[styles.fallback, style]}>

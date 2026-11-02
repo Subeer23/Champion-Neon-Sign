@@ -1,3 +1,4 @@
+import { usePressGuard } from '../../../shared/hooks/usePressGuard';
 import { SolutionIcon } from '../../../shared/components/SolutionIcon';
 import React from 'react';
 import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
@@ -20,6 +21,7 @@ export function ShowcaseCard({
   compact?: boolean;
   mediaHeight?: number;
 }) {
+  const guardedPress = usePressGuard(onPress);
   const { fontScale } = useWindowDimensions();
   const expanded = fontScale > 1.3;
   return (
@@ -27,7 +29,7 @@ export function ShowcaseCard({
       accessibilityRole="button"
       accessibilityLabel={`Explore ${title}`}
       accessibilityHint={compact ? undefined : subtitle}
-      onPress={onPress}
+      onPress={guardedPress}
       style={({ pressed }) => [
         styles.card,
         compact && styles.compact,

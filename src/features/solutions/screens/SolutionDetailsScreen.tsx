@@ -1,5 +1,5 @@
 import { MediaCarousel } from '../../../shared/components/MediaCarousel';
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { Screen } from '../../../shared/components/Screen';
@@ -13,13 +13,24 @@ export function SolutionDetailsScreen({
   navigation,
 }: RootScreenProps<'SolutionDetails'>) {
   const { data, isLoading, isError, refetch } = useGetSolutionQuery(
-    route.params.solutionId,
+    route.params?.solutionId ?? '',
   );
   const projects = useGetProjectsQuery();
-  const related =
-    projects.data?.filter(item =>
-      item.solutionIds.includes(route.params.solutionId),
-    ) ?? [];
+  const solutionId = route.params?.solutionId;
+  const related = useMemo(
+    () =>
+      projects.data?.filter(
+        item => solutionId && item.solutionIds.includes(solutionId),
+      ) ?? [],
+    [projects.data, solutionId],
+  );
+  const imageIds = useMemo(
+    () =>
+      data?.imageId
+        ? [data.imageId, ...related.flatMap(item => item.imageIds)]
+        : [],
+    [data?.imageId, related],
+  );
   return (
     <Screen>
       <QueryState
@@ -31,13 +42,7 @@ export function SolutionDetailsScreen({
       {data && (
         <>
           {data.imageId ? (
-            <MediaCarousel
-              imageIds={[
-                data.imageId,
-                ...related.flatMap(item => item.imageIds),
-              ]}
-              title={data.title}
-            />
+            <MediaCarousel imageIds={imageIds} title={data.title} />
           ) : (
             <ContentMedia title={data.title} />
           )}

@@ -1,3 +1,4 @@
+import { usePressGuard } from '../../../shared/hooks/usePressGuard';
 import React from 'react';
 import {
   ScrollView,
@@ -28,6 +29,8 @@ import { SectionHeading } from '../components/SectionHeading';
 import { ShowcaseCard } from '../components/ShowcaseCard';
 import { clientPreview } from '../data/homeContent';
 export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
+  const openMenu = usePressGuard(() => navigation.navigate('More'));
+  const openProfile = usePressGuard(() => navigation.navigate('Profile'));
   const { width, fontScale } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const available = Math.min(width - insets.left - insets.right, 1100) - 40;
@@ -50,7 +53,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Open menu"
-            onPress={() => navigation.navigate('More')}
+            onPress={openMenu}
             style={styles.icon}
           >
             <LineIcon name="menu" color={colors.text} />
@@ -59,7 +62,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Open Profile"
-            onPress={() => navigation.navigate('Profile')}
+            onPress={openProfile}
             style={styles.icon}
           >
             <LineIcon name="user" color={colors.text} />

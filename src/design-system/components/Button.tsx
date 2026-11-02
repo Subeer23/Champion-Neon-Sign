@@ -1,3 +1,4 @@
+import { usePressGuard } from '../../shared/hooks/usePressGuard';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -22,11 +23,14 @@ export function Button({
   compact = false,
   round = false,
   disabled,
+  onPress,
   ...props
 }: Props) {
+  const guardedPress = usePressGuard(onPress ?? undefined);
   return (
     <Pressable
       {...props}
+      onPress={guardedPress}
       accessibilityRole="button"
       accessibilityLabel={props.accessibilityLabel ?? label}
       accessibilityState={{ disabled: disabled || loading, busy: loading }}

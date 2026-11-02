@@ -19,7 +19,11 @@ const initialState: State = {
   saving: false,
   error: null,
 };
-type Config = { extra: AppDependencies; rejectValue: string };
+type Config = {
+  extra: AppDependencies;
+  rejectValue: string;
+  state: { auth: State };
+};
 export const hydrateDemoAccess = createAsyncThunk<DemoAccess, void, Config>(
   'auth/hydrate',
   async (_, { extra, rejectWithValue }) => {
@@ -31,6 +35,7 @@ export const hydrateDemoAccess = createAsyncThunk<DemoAccess, void, Config>(
       return rejectWithValue('Demo session could not be loaded. Please retry.');
     }
   },
+  { condition: (_, { getState }) => getState().auth.status !== 'loading' },
 );
 export const setDemoAccess = createAsyncThunk<DemoAccess, DemoAccess, Config>(
   'auth/access',
@@ -42,6 +47,7 @@ export const setDemoAccess = createAsyncThunk<DemoAccess, DemoAccess, Config>(
       return rejectWithValue('Demo session could not be saved. Please retry.');
     }
   },
+  { condition: (_, { getState }) => !getState().auth.saving },
 );
 export const clearLocalDemo = createAsyncThunk<void, void, Config>(
   'auth/clearLocalDemo',
@@ -49,9 +55,12 @@ export const clearLocalDemo = createAsyncThunk<void, void, Config>(
     try {
       await extra.demo.clearDemoData();
     } catch {
-      return rejectWithValue('Demo data could not be cleared. Please retry.');
+      return rejectWithValue(
+        'Demo data could not be fully cleared. Please retry from Settings.',
+      );
     }
   },
+  { condition: (_, { getState }) => !getState().auth.saving },
 );
 const slice = createSlice({
   name: 'auth',

@@ -1,3 +1,4 @@
+import { usePressGuard } from '../../../shared/hooks/usePressGuard';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText, Button, Card } from '../../../design-system/components';
@@ -70,11 +71,12 @@ export function AccountRow({
   detail?: string;
   onPress: () => void;
 }) {
+  const guardedPress = usePressGuard(onPress);
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      onPress={onPress}
+      onPress={guardedPress}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.copy}>

@@ -70,6 +70,7 @@ export function GetQuoteScreen({
   const [ready, setReady] = useState(Boolean(profile));
   const [restoreAttempt, setRestoreAttempt] = useState(0);
   const owner = useRef(profile?.id);
+  const missingDraft = useRef(Boolean(draftId && !restored));
   useEffect(() => {
     if (owner.current) return;
     let active = true;
@@ -132,10 +133,11 @@ export function GetQuoteScreen({
       setError(invalid);
       return;
     }
-    action.run(async () => {
+    action.run(async isActive => {
       const quote = submit
         ? await repo.submitQuote(form, id)
         : await repo.saveQuoteDraft(form, id, step);
+      if (!isActive() || navigation.isFocused?.() === false) return;
       setDirty(false);
       if (submit) setFinished(quote.reference);
       else
@@ -145,8 +147,9 @@ export function GetQuoteScreen({
     });
   }
   function authenticate(entry: 'Login' | 'SignUp') {
-    action.run(async () => {
+    action.run(async isActive => {
       await guestQuoteHandoff.save({ form, step });
+      if (!isActive() || navigation.isFocused?.() === false) return;
       setDirty(false);
       dispatch(selectAuthEntry(entry));
       await dispatch(setDemoAccess(null)).unwrap();
@@ -167,6 +170,18 @@ export function GetQuoteScreen({
       onChange={update}
     />
   );
+  if (missingDraft.current)
+    return (
+      <AuthFrame title="Get a Quote" onBack={navigation.goBack}>
+        <AppText accessibilityRole="alert">
+          This draft was removed or belongs to another demo account.
+        </AppText>
+        <Button
+          label="View My Quotations"
+          onPress={() => navigation.replace('MyQuotations')}
+        />
+      </AuthFrame>
+    );
   if (finished)
     return (
       <AuthFrame title="Request Saved">

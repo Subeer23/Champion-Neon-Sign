@@ -6,7 +6,7 @@ import { Screen } from '../../../shared/components/Screen';
 import { colors } from '../../../design-system/tokens/colors';
 import {
   useAuthRepository,
-  useDemoSnapshot,
+  useDemoSelector,
 } from '../../auth/data/AuthRepositoryProvider';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
 import {
@@ -27,7 +27,10 @@ import { version } from '../../../../package.json';
 export function AppSettingsScreen({
   navigation,
 }: RootScreenProps<'AppSettings'>) {
-  const { profile, notificationsEnabled } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const notificationsEnabled = useDemoSelector(
+    snapshot => snapshot.notificationsEnabled,
+  );
   const repo = useAuthRepository();
   const action = useAsyncAction();
   const dispatch = useAppDispatch();
@@ -176,7 +179,7 @@ export function LegalDocumentScreen({
   navigation,
 }: RootScreenProps<'LegalDocument'>) {
   const action = useAsyncAction();
-  const privacy = route.params.kind === 'privacy';
+  const privacy = route.params?.kind === 'privacy';
   return (
     <Screen>
       <AppText variant="title">

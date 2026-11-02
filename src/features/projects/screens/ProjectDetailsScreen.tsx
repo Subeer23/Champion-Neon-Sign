@@ -1,9 +1,9 @@
 import {
   useAuthRepository,
-  useDemoSnapshot,
+  useDemoSelector,
 } from '../../auth/data/AuthRepositoryProvider';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../../design-system/tokens/colors';
@@ -20,11 +20,14 @@ export function ProjectDetailsScreen({
   route,
   navigation,
 }: RootScreenProps<'ProjectDetails'>) {
-  const { profile, savedProjects } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const saved = useDemoSelector(snapshot =>
+    snapshot.savedProjects.includes(route.params?.projectId ?? ''),
+  );
   const repository = useAuthRepository();
   const action = useAsyncAction();
   const { data, isLoading, isError, refetch } = useGetProjectQuery(
-    route.params.projectId,
+    route.params?.projectId ?? '',
   );
   const solutions = useGetSolutionsQuery();
   const { width, fontScale } = useWindowDimensions();
@@ -34,7 +37,10 @@ export function ProjectDetailsScreen({
     Math.min(width - insets.left - insets.right, 760) - 40,
   );
   const narrow = contentWidth / fontScale < 360;
-  const galleryIds = data?.imageIds.filter(id => getImage(id)) ?? [];
+  const galleryIds = useMemo(
+    () => [...new Set(data?.imageIds ?? [])].filter(id => getImage(id)),
+    [data?.imageIds],
+  );
   return (
     <Screen>
       <QueryState
@@ -49,7 +55,7 @@ export function ProjectDetailsScreen({
           <Button
             label={
               profile
-                ? savedProjects.includes(data.id)
+                ? saved
                   ? 'Unsave project'
                   : 'Save project'
                 : 'Login to save project'

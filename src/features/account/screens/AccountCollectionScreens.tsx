@@ -8,7 +8,6 @@ import { Screen } from '../../../shared/components/Screen';
 import { ContentMedia } from '../../../shared/components/ContentMedia';
 import {
   useAuthRepository,
-  useDemoSnapshot,
   useDemoSelector,
 } from '../../auth/data/AuthRepositoryProvider';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
@@ -60,7 +59,8 @@ function ListFrame<T>({
 export function SavedProjectsScreen({
   navigation,
 }: RootScreenProps<'SavedProjects'>) {
-  const { profile, savedProjects } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const savedProjects = useDemoSelector(snapshot => snapshot.savedProjects);
   const repo = useAuthRepository();
   const action = useAsyncAction();
   const projects = useGetProjectsQuery();
@@ -188,7 +188,7 @@ export function QuotationDetailsScreen({
 }: RootScreenProps<'QuotationDetails'>) {
   const profile = useDemoSelector(snapshot => snapshot.profile?.id);
   const quote = useDemoSelector(snapshot =>
-    snapshot.quotations.find(q => q.id === route.params.quotationId),
+    snapshot.quotations.find(q => q.id === route.params?.quotationId),
   );
   const repo = useAuthRepository();
   const action = useAsyncAction();
@@ -279,8 +279,10 @@ export function QuotationDetailsScreen({
                     text: 'Delete',
                     style: 'destructive',
                     onPress: () =>
-                      action.run(async () => {
+                      action.run(async isActive => {
                         await repo.deleteQuotation(quote.id);
+                        if (!isActive() || navigation.isFocused?.() === false)
+                          return;
                         navigation.goBack();
                       }),
                   },
@@ -303,7 +305,11 @@ export function QuotationDetailsScreen({
 export function NotificationsScreen({
   navigation,
 }: RootScreenProps<'Notifications'>) {
-  const { profile, notifications, notificationsEnabled } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const notifications = useDemoSelector(snapshot => snapshot.notifications);
+  const notificationsEnabled = useDemoSelector(
+    snapshot => snapshot.notificationsEnabled,
+  );
   const repo = useAuthRepository();
   const action = useAsyncAction();
   if (!profile)
@@ -352,8 +358,9 @@ export function NotificationsScreen({
             <Button
               label="View quotation"
               onPress={() =>
-                action.run(async () => {
+                action.run(async isActive => {
                   await repo.markNotificationRead(n.id);
+                  if (!isActive() || navigation.isFocused?.() === false) return;
                   navigation.navigate('QuotationDetails', {
                     quotationId: n.quoteId!,
                   });

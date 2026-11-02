@@ -34,7 +34,7 @@ import {
 } from '../components/AuthPrimitives';
 import {
   useAuthRepository,
-  useDemoSnapshot,
+  useDemoSelector,
 } from '../data/AuthRepositoryProvider';
 import { passwordRules, type DemoChallenge } from '../domain/AuthRepository';
 import { useAppDispatch, useAppSelector } from '../../../app/store/hooks';
@@ -98,7 +98,7 @@ function Credentials({
 }: {
   navigation: Pick<
     Props<'Login'>['navigation'],
-    'navigate' | 'replace' | 'goBack' | 'canGoBack'
+    'navigate' | 'replace' | 'goBack' | 'canGoBack' | 'isFocused'
   >;
   signup: boolean;
 }) {
@@ -111,12 +111,13 @@ function Credentials({
   const [confirm, setConfirm] = useState('');
   const [consent, setConsent] = useState(false);
   const submit = () =>
-    action.run(async () => {
+    action.run(async isActive => {
       Keyboard.dismiss();
       if (signup && (password !== confirm || !consent))
         throw new Error('Match both passwords and acknowledge demo mode.');
       if (signup) await repository.signUp(name, email, password, phone);
       else await repository.login(email, password);
+      if (!isActive() || navigation.isFocused?.() === false) return;
       setPassword('');
       setConfirm('');
       navigation.replace('LoginSuccess');
@@ -284,8 +285,9 @@ export function ForgotPasswordScreen({ navigation }: Props<'ForgotPassword'>) {
         label="Generate Demo Code"
         loading={action.busy}
         onPress={() =>
-          action.run(async () => {
+          action.run(async isActive => {
             const challenge = await repository.requestReset(email);
+            if (!isActive() || navigation.isFocused?.() === false) return;
             navigation.navigate('OTPVerification', { email, challenge });
           })
         }
@@ -304,9 +306,21 @@ export function OTPVerificationScreen({
 }: Props<'OTPVerification'>) {
   const repository = useAuthRepository();
   const action = useDemoAction();
-  const [challenge, setChallenge] = useState(route.params.challenge);
+  const [challenge, setChallenge] = useState(route.params?.challenge);
   const [code, setCode] = useState('');
   const inputs = useRef<(React.ComponentRef<typeof TextInput> | null)[]>([]);
+  if (!challenge?.id || !challenge.code)
+    return (
+      <AuthFrame title="OTP Verification" onBack={navigation.goBack}>
+        <AppText accessibilityRole="alert">
+          This verification session is unavailable. Generate a new demo code.
+        </AppText>
+        <Button
+          label="Restart password reset"
+          onPress={() => navigation.replace('ForgotPassword')}
+        />
+      </AuthFrame>
+    );
   return (
     <AuthFrame title="OTP Verification" onBack={navigation.goBack}>
       <AuthEmblem />
@@ -314,7 +328,7 @@ export function OTPVerificationScreen({
         Verify the demo code
       </AppText>
       <AppText muted style={s.centered}>
-        No message was sent to {route.params.email}.
+        No message was sent to {route.params?.email}.
       </AppText>
       <AppText style={s.centered}>
         Demo code: {challenge.code} · valid for 5 minutes
@@ -353,8 +367,12 @@ export function OTPVerificationScreen({
       <TextLink
         label="Generate a new demo code"
         onPress={() =>
-          action.run(async () => {
-            setChallenge(await repository.requestReset(route.params.email));
+          action.run(async isActive => {
+            const nextChallenge = await repository.requestReset(
+              route.params?.email ?? '',
+            );
+            if (!isActive() || navigation.isFocused?.() === false) return;
+            setChallenge(nextChallenge);
             setCode('');
             inputs.current[0]?.focus();
           })
@@ -365,8 +383,9 @@ export function OTPVerificationScreen({
         label="Verify Demo Code"
         loading={action.busy}
         onPress={() =>
-          action.run(async () => {
+          action.run(async isActive => {
             await repository.verifyCode(challenge.id, code);
+            if (!isActive() || navigation.isFocused?.() === false) return;
             navigation.replace('CreateNewPassword', {
               challengeId: challenge.id,
             });
@@ -427,9 +446,13 @@ export function CreateNewPasswordScreen({
         label="Update Demo Password"
         loading={action.busy}
         onPress={() =>
-          action.run(async () => {
+          action.run(async isActive => {
             if (password !== confirm) throw new Error('Passwords must match.');
-            await repository.resetPassword(route.params.challengeId, password);
+            await repository.resetPassword(
+              route.params?.challengeId ?? '',
+              password,
+            );
+            if (!isActive() || navigation.isFocused?.() === false) return;
             setPassword('');
             setConfirm('');
             navigation.reset({
@@ -470,7 +493,7 @@ export function PasswordChangedScreen({
   );
 }
 export function LoginSuccessScreen() {
-  const { profile } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile);
   const dispatch = useAppDispatch();
   const { saving, error } = useAppSelector(state => state.auth);
   return (

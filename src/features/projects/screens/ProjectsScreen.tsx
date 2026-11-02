@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import type { TabScreenProps } from '../../../app/navigation/types';
 import { CatalogList } from '../../../shared/components/CatalogList';
 import { useGetProjectsQuery } from '../state/projectsApi';
@@ -9,6 +9,10 @@ export function ProjectsScreen({ navigation }: TabScreenProps<'Projects'>) {
     [data],
   );
   const categories = useMemo(() => items.map(item => item.title), [items]);
+  const select = useCallback(
+    (projectId: string) => navigation.navigate('ProjectDetails', { projectId }),
+    [navigation],
+  );
   return (
     <CatalogList
       onQuote={() => navigation.navigate('GetQuote')}
@@ -20,9 +24,7 @@ export function ProjectsScreen({ navigation }: TabScreenProps<'Projects'>) {
       title="Projects"
       description="Official website showcases. Explore our work in branding, digital displays, exhibitions and events."
       verb="View"
-      onSelect={projectId =>
-        navigation.navigate('ProjectDetails', { projectId })
-      }
+      onSelect={select}
     />
   );
 }
