@@ -40,6 +40,10 @@ export function ProfileScreen({ navigation }: RootScreenProps<'Profile'>) {
           </AppText>
         </View>
       </Card>
+      <Button
+        label="Get a Quote"
+        onPress={() => navigation.navigate('GetQuote')}
+      />
       {!profile && <GuestPrompt />}
       {profile && (
         <>
@@ -56,7 +60,7 @@ export function ProfileScreen({ navigation }: RootScreenProps<'Profile'>) {
             />
             <AccountRow
               title="My Quotations"
-              detail={`${quotations.length} local demo drafts`}
+              detail={`${quotations.length} local demo requests`}
               onPress={() => navigation.navigate('MyQuotations')}
             />
             <AccountRow

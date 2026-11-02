@@ -35,6 +35,7 @@ export function CatalogList({
   verb,
   onSelect,
   categories,
+  onQuote,
 }: {
   items: readonly CatalogItem[];
   loading: boolean;
@@ -45,6 +46,7 @@ export function CatalogList({
   verb: string;
   onSelect: (id: string) => void;
   categories?: readonly string[];
+  onQuote?: () => void;
 }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
@@ -80,6 +82,7 @@ export function CatalogList({
               {title}
             </AppText>
             <AppText muted>{description}</AppText>
+            {onQuote && <Button label="Get a Quote" onPress={onQuote} />}
             <SearchField
               label={`Search ${title.toLowerCase()}`}
               value={query}

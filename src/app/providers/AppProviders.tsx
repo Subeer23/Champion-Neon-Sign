@@ -4,7 +4,10 @@ import { AuthRepositoryProvider } from '../../features/auth/data/AuthRepositoryP
 import React, { useEffect, useState, type PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
 import { createPreferencesStorage } from '../../core/storage/AsyncPreferencesStorage';
 import { colors } from '../../design-system/tokens/colors';
 import { hydrateOnboarding } from '../../features/onboarding/state/onboardingSlice';
@@ -45,7 +48,7 @@ export function AppProviders({
   return (
     <Provider store={store}>
       <AuthRepositoryProvider repository={store.demoRepository}>
-        <SafeAreaProvider>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <NavigationContainer theme={navigationTheme}>
             {children}
           </NavigationContainer>

@@ -28,6 +28,17 @@ export interface AuthRepository {
   changePassword(current: string, next: string): Promise<void>;
   toggleSavedProject(id: string): Promise<void>;
   saveQuotation(input: QuoteInput, requestId: string): Promise<DemoQuote>;
+  saveQuoteDraft(
+    form: import('../../quote/domain/Quote').QuoteFormData,
+    id: string,
+    step: number,
+  ): Promise<DemoQuote>;
+  submitQuote(
+    form: import('../../quote/domain/Quote').QuoteFormData,
+    id: string,
+  ): Promise<DemoQuote>;
+  deleteQuotation(id: string): Promise<void>;
+  cancelQuotation(id: string): Promise<void>;
   setNotificationsEnabled(enabled: boolean): Promise<void>;
   markNotificationRead(id: string): Promise<void>;
   clearDemoData(): Promise<void>;

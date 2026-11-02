@@ -17,7 +17,14 @@ export function AuthFrame({
   title,
   onBack,
   children,
-}: PropsWithChildren<{ title: string; onBack?: () => void }>) {
+  footer,
+  scrollKey,
+}: PropsWithChildren<{
+  title: string;
+  onBack?: () => void;
+  footer?: React.ReactNode;
+  scrollKey?: string | number;
+}>) {
   return (
     <View style={styles.page}>
       <Header title={title} onBack={onBack} />
@@ -27,6 +34,7 @@ export function AuthFrame({
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView
+            key={scrollKey}
             contentInsetAdjustmentBehavior="never"
             automaticallyAdjustContentInsets={false}
             keyboardShouldPersistTaps="handled"
@@ -35,6 +43,7 @@ export function AuthFrame({
           >
             {children}
           </ScrollView>
+          {footer}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>

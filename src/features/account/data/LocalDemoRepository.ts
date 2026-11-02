@@ -1,3 +1,4 @@
+import { validateQuote, type QuoteFormData } from '../../quote/domain/Quote';
 import { z } from 'zod';
 import type {
   AuthRepository,
@@ -12,6 +13,7 @@ import {
   quoteInputSchema,
   notificationSchema,
   normalizeEmail,
+  normalizePhone,
   emptySnapshot,
   type DemoSnapshot,
   type ProfileInput,
@@ -41,6 +43,7 @@ const accountSchema = z.object({
   credential: credentialSchema,
   savedProjects: z.array(z.string()).max(1000),
   quotations: z.array(quoteSchema).max(500),
+  quoteKey: z.string().optional(),
   notifications: z.array(notificationSchema).max(500),
   notificationsEnabled: z.boolean(),
 });
@@ -68,6 +71,11 @@ export const localId = () =>
 export class LocalDemoRepository implements AuthRepository {
   private database: Database | null = null;
   private hasStoredDatabase = false;
+  private persistedMetadata: string | null = null;
+  private quoteDocuments = new Map<
+    string,
+    { key: string; serialized: string }
+  >();
   private snapshot: DemoSnapshot = emptySnapshot;
   private listeners = new Set<() => void>();
   private queue: Promise<unknown> = Promise.resolve();
@@ -107,6 +115,24 @@ export class LocalDemoRepository implements AuthRepository {
     this.hasStoredDatabase = true;
     try {
       const result = databaseSchema.parse(JSON.parse(raw));
+      const documents = new Map<string, { key: string; serialized: string }>();
+      await Promise.all(
+        result.accounts.map(async account => {
+          if (!account.quoteKey) return;
+          const expectedPrefix = `champion-quotes:v1:account:${account.profile.id}:`;
+          if (!account.quoteKey.startsWith(expectedPrefix)) throw new Error();
+          const quotes = await this.storage.getItem(account.quoteKey);
+          if (quotes === null) throw new Error();
+          account.quotations = z
+            .array(quoteSchema)
+            .max(500)
+            .parse(JSON.parse(quotes));
+          documents.set(account.profile.id, {
+            key: account.quoteKey,
+            serialized: JSON.stringify(account.quotations),
+          });
+        }),
+      );
       const ids = new Set(result.accounts.map(a => a.profile.id));
       const emails = new Set(result.accounts.map(a => a.profile.email));
       if (
@@ -128,6 +154,8 @@ export class LocalDemoRepository implements AuthRepository {
         )
           throw new Error();
       }
+      this.quoteDocuments = documents;
+      this.persistedMetadata = raw;
       return result;
     } catch {
       throw new Error(
@@ -136,6 +164,9 @@ export class LocalDemoRepository implements AuthRepository {
     }
   }
   private publish(db: Database) {
+    const previousAccount = this.database?.accounts.find(
+      a => a.profile.id === this.snapshot.profile?.id,
+    );
     this.database = db;
     const account =
       db.session?.kind === 'account'
@@ -144,7 +175,8 @@ export class LocalDemoRepository implements AuthRepository {
               a.profile.id === (db.session as { accountId: string }).accountId,
           )
         : undefined;
-    this.snapshot = account
+    const previous = this.snapshot;
+    const next: DemoSnapshot = account
       ? {
           profile: account.profile,
           savedProjects: account.savedProjects,
@@ -153,17 +185,87 @@ export class LocalDemoRepository implements AuthRepository {
           notificationsEnabled: account.notificationsEnabled,
         }
       : emptySnapshot;
+    const sameAccount = previous.profile?.id === next.profile?.id;
+    if (sameAccount) {
+      for (const key of [
+        'profile',
+        'savedProjects',
+        'quotations',
+        'notifications',
+      ] as const) {
+        if (
+          (key === 'quotations' &&
+            Boolean(account?.quoteKey) &&
+            account?.quoteKey === previousAccount?.quoteKey) ||
+          previous[key] === next[key] ||
+          JSON.stringify(previous[key]) === JSON.stringify(next[key])
+        ) {
+          // Retain references for selector subscribers and memoized rows.
+          Object.assign(next, { [key]: previous[key] });
+        }
+      }
+    }
+    if (
+      Object.keys(next).every(
+        key =>
+          previous[key as keyof DemoSnapshot] ===
+          next[key as keyof DemoSnapshot],
+      )
+    )
+      return;
+    this.snapshot = next;
     this.listeners.forEach(listener => listener());
   }
   private async commit(db: Database) {
     const valid = databaseSchema.parse(db);
+    const staged: string[] = [];
+    const documents = new Map<string, { key: string; serialized: string }>();
+    let metadata: string;
     try {
-      await this.storage.setItem(DEMO_DATABASE_KEY, JSON.stringify(valid));
+      // Stage immutable account documents before atomically updating the database pointer.
+      // A failed database write leaves the previously committed quotations intact.
+      for (const account of valid.accounts) {
+        const previous = this.quoteDocuments.get(account.profile.id);
+        const serialized = JSON.stringify(account.quotations);
+        if (previous && previous.serialized === serialized) {
+          account.quoteKey = previous.key;
+        } else {
+          account.quoteKey = `champion-quotes:v1:account:${
+            account.profile.id
+          }:${localId()}`;
+          staged.push(account.quoteKey);
+          await this.storage.setItem(account.quoteKey, serialized);
+        }
+        documents.set(account.profile.id, {
+          key: account.quoteKey,
+          serialized,
+        });
+      }
+      metadata = JSON.stringify({
+        ...valid,
+        accounts: valid.accounts.map(a => ({ ...a, quotations: [] })),
+      });
+      if (metadata !== this.persistedMetadata)
+        await this.storage.setItem(DEMO_DATABASE_KEY, metadata);
     } catch {
+      await Promise.all(
+        staged.map(key => this.storage.removeItem(key).catch(() => undefined)),
+      );
       throw new Error('Local demo changes could not be saved. Please retry.');
     }
+    const retained = new Set(
+      [...documents.values()].map(document => document.key),
+    );
+    const obsolete = [...this.quoteDocuments.values()]
+      .map(document => document.key)
+      .filter(key => !retained.has(key));
+    this.quoteDocuments = documents;
+    this.persistedMetadata = metadata;
     this.hasStoredDatabase = true;
     this.publish(valid);
+    await Promise.all(
+      obsolete.map(key => this.storage.removeItem(key).catch(() => undefined)),
+    );
   }
   private async edit<T>(work: (db: Database) => Promise<T> | T): Promise<T> {
     return this.serial(async () => {
@@ -419,9 +521,7 @@ export class LocalDemoRepository implements AuthRepository {
       const quote = {
         ...parsed.data,
         id: requestId,
-        reference: `DEMO-${new Date(this.now()).getUTCFullYear()}-${String(
-          a.quotations.length + 1,
-        ).padStart(4, '0')}`,
+        reference: `DEMO-${requestId.toUpperCase()}`,
         createdAt: new Date(this.now()).toISOString(),
         status: 'Local demo • Not submitted' as const,
       };
@@ -438,6 +538,99 @@ export class LocalDemoRepository implements AuthRepository {
         a.notifications = a.notifications.slice(0, 500);
       }
       return quote;
+    });
+  }
+  async saveQuoteDraft(form: QuoteFormData, id: string, step: number) {
+    return this.persistQuote(form, id, step, false);
+  }
+  async submitQuote(form: QuoteFormData, id: string) {
+    const error = validateQuote(form);
+    if (error) throw new Error(error);
+    return this.persistQuote(form, id, 3, true);
+  }
+  private async persistQuote(
+    form: QuoteFormData,
+    id: string,
+    step: number,
+    submit: boolean,
+  ) {
+    return this.editAccount(db => {
+      const account = this.account(db);
+      const existing = account.quotations.find(q => q.id === id);
+      if (existing && existing.status !== 'Draft') {
+        if (submit && existing.status === 'Submitted (Demo)') return existing;
+        throw new Error(
+          'This request is no longer an editable draft. Start a new request.',
+        );
+      }
+      if (
+        existing &&
+        !submit &&
+        existing.step === step &&
+        JSON.stringify(existing.form) === JSON.stringify(form)
+      )
+        return existing;
+      if (!existing && account.quotations.length >= 500)
+        throw new Error('Local quotation limit reached.');
+      const quote = quoteSchema.parse({
+        id,
+        reference: existing?.reference ?? `DEMO-${id.toUpperCase()}`,
+        createdAt: submit
+          ? new Date(this.now()).toISOString()
+          : existing?.createdAt ?? new Date(this.now()).toISOString(),
+        status: submit ? 'Submitted (Demo)' : 'Draft',
+        name:
+          form.name.trim().length >= 2 && form.name.trim().length <= 80
+            ? form.name.trim()
+            : 'Draft visitor',
+        email:
+          validEmail(form.email) && form.email.length <= 254
+            ? normalizeEmail(form.email)
+            : 'draft@example.com',
+        phone: /^\+?[0-9]{7,15}$/.test(normalizePhone(form.phone))
+          ? normalizePhone(form.phone)
+          : '0000000',
+        serviceId: form.solutionId || 'draft',
+        message:
+          form.description.trim().length >= 5
+            ? form.description
+            : 'Incomplete draft',
+        projectId: form.projectId || undefined,
+        form,
+        step,
+      });
+      account.quotations = [
+        quote,
+        ...account.quotations.filter(q => q.id !== id),
+      ];
+      if (submit && account.notificationsEnabled) {
+        account.notifications.unshift({
+          id: localId(),
+          title: 'Demo request saved',
+          body: `${quote.reference} was saved locally. Nothing was sent to Champion Group.`,
+          createdAt: quote.createdAt,
+          read: false,
+          quoteId: id,
+        });
+        account.notifications = account.notifications.slice(0, 500);
+      }
+      return quote;
+    });
+  }
+  async deleteQuotation(id: string) {
+    await this.editAccount(db => {
+      const account = this.account(db);
+      account.quotations = account.quotations.filter(q => q.id !== id);
+      account.notifications = account.notifications.filter(
+        n => n.quoteId !== id,
+      );
+    });
+  }
+  async cancelQuotation(id: string) {
+    await this.editAccount(db => {
+      const quote = this.account(db).quotations.find(q => q.id === id);
+      if (quote?.status === 'Submitted (Demo)')
+        quote.status = 'Cancelled (Demo)';
     });
   }
   async setNotificationsEnabled(enabled: boolean) {
@@ -461,7 +654,18 @@ export class LocalDemoRepository implements AuthRepository {
       } catch {
         throw new Error('Demo data could not be cleared. Please retry.');
       }
+      const keys =
+        this.database?.accounts.flatMap(a =>
+          a.quoteKey ? [a.quoteKey] : [],
+        ) ?? [];
+      this.quoteDocuments.clear();
+      this.persistedMetadata = JSON.stringify(freshDatabase());
       this.publish(freshDatabase());
+      await Promise.all(
+        [...keys, 'champion-quotes:v1:guest-auth-handoff'].map(key =>
+          this.storage.removeItem(key).catch(() => undefined),
+        ),
+      );
       this.clear();
     });
   }

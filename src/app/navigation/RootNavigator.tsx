@@ -1,3 +1,4 @@
+import { useStackMotion } from './useStackMotion';
 import {
   EditProfileScreen,
   ChangePasswordScreen,
@@ -13,9 +14,16 @@ import {
   HelpSupportScreen,
   LegalDocumentScreen,
 } from '../../features/account/screens/AccountSettingsScreens';
+import { Alert } from 'react-native';
 import { MoreScreen } from '../../features/company/screens/MoreScreen';
 import { ProfileScreen } from '../../features/profile/screens/ProfileScreen';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import {
+  useAuthRepository,
+  useDemoSelector,
+} from '../../features/auth/data/AuthRepositoryProvider';
+import { guestQuoteHandoff } from '../../features/quote/state/guestQuoteHandoff';
 import {
   createNativeStackNavigator,
   type NativeStackHeaderProps,
@@ -49,17 +57,84 @@ function StackHeader({
     />
   );
 }
+function QuoteResumeHome() {
+  const navigation =
+    useNavigation<
+      import('./types').RootScreenProps<'GetQuote'>['navigation']
+    >();
+  const repo = useAuthRepository();
+  const profile = useDemoSelector(snapshot => snapshot.profile);
+  const accountId = profile?.id;
+  const name = profile?.name ?? '';
+  const email = profile?.email ?? '';
+  const phone = profile?.phone ?? '';
+  useEffect(() => {
+    if (!accountId) return;
+    let active = true;
+    let resuming = false;
+    const resume = () => {
+      if (resuming || !active) return;
+      resuming = true;
+      return guestQuoteHandoff
+        .restore(accountId)
+        .then(async value => {
+          if (!value || !active) return;
+          const form = {
+            ...value.form,
+            name: value.form.name || name,
+            email: value.form.email || email,
+            phone: value.form.phone || phone,
+          };
+          await guestQuoteHandoff.claim(accountId, value.id);
+          if (!active || repo.getSnapshot().profile?.id !== accountId) return;
+          // A retry after failed cleanup must not overwrite an already adopted draft.
+          const existing = repo
+            .getSnapshot()
+            .quotations.find(q => q.id === value.id);
+          if (!existing) await repo.saveQuoteDraft(form, value.id, value.step);
+          await guestQuoteHandoff.clear(value.id);
+          if (active && repo.getSnapshot().profile?.id === accountId) {
+            if (existing && existing.status !== 'Draft')
+              navigation.navigate('QuotationDetails', {
+                quotationId: value.id,
+              });
+            else navigation.navigate('GetQuote', { draftId: value.id });
+          }
+        })
+        .catch(() => {
+          resuming = false;
+          if (active)
+            Alert.alert(
+              'Draft restoration failed',
+              'Your guest draft is preserved. Retry to restore it to this account.',
+              [{ text: 'Retry', onPress: resume }],
+            );
+        })
+        .finally(() => {
+          resuming = false;
+        });
+    };
+    resume();
+    return () => {
+      active = false;
+    };
+  }, [navigation, accountId, name, email, phone, repo]);
+  return <MainTabs />;
+}
 export function RootNavigator() {
+  const motion = useStackMotion();
   return (
     <Stack.Navigator
       screenOptions={{
+        ...motion,
+        statusBarStyle: 'light',
         contentStyle: { backgroundColor: colors.background },
         header: StackHeader,
       }}
     >
       <Stack.Screen
         name="MainTabs"
-        component={MainTabs}
+        component={QuoteResumeHome}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -139,6 +214,7 @@ export function RootNavigator() {
         options={{
           title: 'Gallery',
           presentation: 'fullScreenModal',
+          animation: motion.animation === 'none' ? 'none' : 'slide_from_bottom',
           headerShown: false,
         }}
       />

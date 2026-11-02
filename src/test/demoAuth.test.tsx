@@ -1,9 +1,10 @@
+import { guestQuoteHandoff } from '../features/quote/state/guestQuoteHandoff';
 import React from 'react';
-import { TextInput } from 'react-native';
+import { Alert, TextInput } from 'react-native';
 import Renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
 import App from '../../App';
 import { QuotationDetailsScreen } from '../features/account/screens/AccountCollectionScreens';
-import { Button } from '../design-system/components';
+import { AppText, Button } from '../design-system/components';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { createMemoryPreferences, createTestStore } from './createTestStore';
 import { rootApi } from '../app/store/rootApi';
@@ -38,6 +39,7 @@ describe('demo authentication navigation', () => {
     });
   }
   beforeEach(async () => {
+    await guestQuoteHandoff.clear();
     const preferences = createMemoryPreferences(true);
     await preferences.setDemoAccess?.(null);
     store = createTestStore({ preferences });
@@ -91,26 +93,56 @@ describe('demo authentication navigation', () => {
     await press('Explore Demo Home');
     expect(store.getState().auth.access).toBe('demo');
   });
-  it('validates a local quote preview while preserving guest access', async () => {
+  it('validates step navigation and restores a guest request after login', async () => {
+    await store.demoRepository.signUp(
+      'Demo Visitor',
+      'demo@example.com',
+      'Sample123!',
+      '+971500000000',
+    );
+    await store.demoRepository.setAccess(null);
     await press('Continue as guest');
     await press('Start your project');
-    await press('Preview Request');
-    expect(JSON.stringify(renderer.toJSON())).toContain('Complete the name');
-    await fill('Full Name', 'Demo Visitor');
-    await fill('Email Address', 'demo@example.com');
-    await fill('Message', 'A sample signage request.');
-    await press('Select a service');
-    await press('Choose Signage');
-    await press('Preview Request');
-    expect(JSON.stringify(renderer.toJSON())).toContain('Preview ready');
-    expect(store.getState().auth.access).toBe('guest');
-    expect(JSON.stringify(store.getState())).not.toContain(
-      'A sample signage request.',
+    await press('Continue');
+    expect(JSON.stringify(renderer.toJSON())).toContain(
+      'Select a solution to continue',
     );
-    await press('Contact our team');
-    expect(
-      renderer.root.findAllByProps({ accessibilityLabel: 'Open Maps' }).length,
-    ).toBeGreaterThan(0);
+    await press('Signage');
+    await press('Continue');
+    await fill('Project title', 'Guest shopfront');
+    await fill('Project description', 'A sample signage request.');
+    await fill('Project location', 'Dubai');
+    const discardPrompt = jest.spyOn(Alert, 'alert');
+    await press('Go back');
+    expect(discardPrompt).toHaveBeenCalledWith(
+      'Leave this request?',
+      expect.any(String),
+      expect.any(Array),
+    );
+    discardPrompt.mockRestore();
+    await press('Continue');
+    await press('Previous step');
+    expect(JSON.stringify(renderer.toJSON())).toContain('Guest shopfront');
+    await press('Continue');
+    expect(store.getState().auth.access).toBe('guest');
+    await press('Login and keep draft');
+    await fill('Email Address', 'demo@example.com');
+    await fill('Password', 'Sample123!');
+    await press('Login');
+    await press('Explore Demo Home');
+    expect(store.demoRepository.getSnapshot().quotations[0]?.form?.title).toBe(
+      'Guest shopfront',
+    );
+    await press('Continue');
+    expect(JSON.stringify(renderer.toJSON())).toContain('Guest shopfront');
+    await press('Edit project');
+    await fill('Project title', 'Updated guest project');
+    await press('Continue');
+    await press('Continue');
+    await press('Submit Request');
+    expect(store.demoRepository.getSnapshot().quotations[0]?.status).toBe(
+      'Submitted (Demo)',
+    );
   });
   it('connects profile inner screens, saves a quotation and updates local notification state', async () => {
     await store.demoRepository.signUp(
@@ -147,15 +179,34 @@ describe('demo authentication navigation', () => {
     }
     await press('My Quotations');
     await press('Create demo quotation');
-    await fill('Message', 'A detailed local project request.');
-    await press('Select a service');
-    await press('Choose Signage');
-    await press('Preview Request');
-    await press('Save Demo Quotation');
+    await press('Signage');
+    await press('Continue');
+    await fill('Project title', 'A local project');
+    await fill('Project description', 'A detailed local project request.');
+    await fill('Project location', 'Dubai');
+    await press('Continue');
+    await press('Continue');
+    await press('Save draft');
+    expect(store.demoRepository.getSnapshot().quotations[0]?.status).toBe(
+      'Draft',
+    );
+    await press('Go back');
+    await press('View demo');
+    await press('Continue editing draft');
+    expect(
+      renderer.root
+        .findAllByType(AppText)
+        .some(node => String(node.props.children).includes('A local project')),
+    ).toBe(true);
+    await press('Submit Request');
     expect(store.demoRepository.getSnapshot().quotations).toHaveLength(1);
     expect(store.demoRepository.getSnapshot().notifications).toHaveLength(1);
-    await press('View Saved Quotation');
-    expect(renderer.root.findAllByType(QuotationDetailsScreen).length).toBe(1);
+    await press('View My Quotations');
+    await press('View demo');
+    expect(
+      renderer.root.findAllByType(QuotationDetailsScreen).at(-1)!.props.route
+        .params.quotationId,
+    ).toBe(store.demoRepository.getSnapshot().quotations[0]!.id);
   });
   it('navigates the complete reset preview with a pasted six-digit code', async () => {
     await store.demoRepository.signUp(

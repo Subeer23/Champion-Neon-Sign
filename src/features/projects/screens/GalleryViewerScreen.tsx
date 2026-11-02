@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import {
-  FlatList,
-  View,
-  StyleSheet,
-  useWindowDimensions,
-  StatusBar,
-} from 'react-native';
+import { FlatList, View, StyleSheet, useWindowDimensions } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button } from '../../../design-system/components';
 import { BrandImage } from '../../../design-system/components/BrandImage';
@@ -37,13 +30,11 @@ export function GalleryViewerScreen({
   const ids = data?.imageIds.filter(id => getImage(id)) ?? [];
   const [index, setIndex] = useState(route.params.initialIndex ?? 0);
   const current = clampGalleryIndex(index, ids.length);
-  const focused = useIsFocused();
   return (
     <SafeAreaView
       style={styles.screen}
       edges={['top', 'bottom', 'left', 'right']}
     >
-      {focused && <StatusBar barStyle="light-content" />}
       <View style={styles.header}>
         <IconButton
           icon="close"

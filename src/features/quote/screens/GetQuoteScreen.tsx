@@ -1,240 +1,446 @@
-import {
-  useAuthRepository,
-  useDemoSnapshot,
-} from '../../auth/data/AuthRepositoryProvider';
-import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
-import { GuestPrompt } from '../../account/components/AccountPrimitives';
-import { localId } from '../../account/data/LocalDemoRepository';
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { QuoteField, SolutionChoices } from '../components/QuoteFields';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { usePreventRemove } from '@react-navigation/native';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
 import { colors } from '../../../design-system/tokens/colors';
-import { AuthFrame, FormInput } from '../../auth/components/AuthPrimitives';
-import { validEmail } from '../../auth/domain/AuthRepository';
+import { AuthFrame } from '../../auth/components/AuthPrimitives';
+import {
+  useAuthRepository,
+  useDemoSelector,
+} from '../../auth/data/AuthRepositoryProvider';
+import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
+import { localId } from '../../account/data/LocalDemoRepository';
 import { solutionFixtures } from '../../../mocks/fixtures/solutions';
 import { projectFixtures } from '../../../mocks/fixtures/projects';
+import {
+  emptyQuoteForm,
+  validateQuote,
+  validateQuoteStep,
+  type QuoteFormData,
+} from '../domain/Quote';
+import { useAppDispatch } from '../../../app/store/hooks';
+import { selectAuthEntry, setDemoAccess } from '../../auth/state/authSlice';
+import { guestQuoteHandoff } from '../state/guestQuoteHandoff';
+
+const steps = [
+  'Select Solution',
+  'Project Requirements',
+  'Contact Details',
+  'Review Request',
+];
 export function GetQuoteScreen({
   route,
   navigation,
 }: RootScreenProps<'GetQuote'>) {
-  const { profile } = useDemoSnapshot();
-  const repository = useAuthRepository();
-  const action = useAsyncAction();
-  const [requestId, setRequestId] = useState(localId);
-  const [savedId, setSavedId] = useState<string | null>(null);
-  const [name, setName] = useState(profile?.name ?? '');
-  const [email, setEmail] = useState(profile?.email ?? '');
-  const [phone, setPhone] = useState(profile?.phone ?? '');
-  const [message, setMessage] = useState('');
-  const [solution, setSolution] = useState(route.params?.solutionId ?? '');
-  const [selecting, setSelecting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [preview, setPreview] = useState(false);
-  const project = projectFixtures.find(
-    item => item.id === route.params?.projectId,
+  const profile = useDemoSelector(snapshot => snapshot.profile);
+  const draftId = route.params?.draftId;
+  const restored = useDemoSelector(snapshot =>
+    snapshot.quotations.find(q => q.id === draftId && q.status === 'Draft'),
   );
-  const selected = solutionFixtures.find(item => item.id === solution);
-  return (
-    <AuthFrame title="Get a Quote" onBack={navigation.goBack}>
-      <AppText muted>Fill in sample details to preview your request.</AppText>
-      <AppText variant="caption" style={styles.notice}>
-        Demo form · Preview or save a local draft. Nothing is submitted or sent.
-        Use sample contact details.
-      </AppText>
-      {project && <AppText variant="label">Project: {project.title}</AppText>}
-      <FormInput
-        editable={!action.busy && !savedId}
-        label="Full Name"
-        icon="user"
-        placeholder="Demo Visitor"
-        value={name}
-        onChangeText={setName}
-      />
-      <FormInput
-        editable={!action.busy && !savedId}
-        label="Email Address"
-        placeholder="demo@example.com"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <FormInput
-        editable={!action.busy && !savedId}
-        label="Phone Number"
-        icon="phone"
-        placeholder="Sample phone number"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
-      />
-      <AppText variant="caption" muted>
-        Project Type
-      </AppText>
-      <Pressable
-        disabled={action.busy || Boolean(savedId)}
-        accessibilityRole="button"
-        accessibilityLabel="Select a service"
-        accessibilityState={{ expanded: selecting }}
-        onPress={() => setSelecting(!selecting)}
-        style={styles.select}
-      >
-        <AppText>{selected?.title ?? 'Select a service'}</AppText>
-        <AppText muted>⌄</AppText>
-      </Pressable>
-      {selecting && (
-        <View style={styles.choices}>
-          {solutionFixtures.map(item => (
-            <Pressable
-              key={item.id}
-              accessibilityRole="button"
-              accessibilityLabel={`Choose ${item.title}`}
-              accessibilityState={{ selected: solution === item.id }}
-              onPress={() => {
-                setSolution(item.id);
-                setSelecting(false);
-                setPreview(false);
-              }}
-              style={styles.choice}
-            >
-              <AppText
-                variant="label"
-                style={solution === item.id && styles.notice}
-              >
-                {item.title}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
-      )}
-      <FormInput
-        editable={!action.busy && !savedId}
-        label="Message"
-        icon="mail"
-        placeholder="Tell us about your sample project"
-        multiline
-        value={message}
-        onChangeText={setMessage}
-        style={styles.message}
-      />
-      {error && (
-        <AppText accessibilityRole="alert" style={styles.notice}>
-          {error}
-        </AppText>
-      )}
-      <Button
-        disabled={action.busy || Boolean(savedId)}
-        label="Preview Request"
-        onPress={() => {
-          if (
-            !name.trim() ||
-            !validEmail(email) ||
-            !solution ||
-            !message.trim()
-          ) {
-            setPreview(false);
-            setError('Complete the name, valid email, service and message.');
-            return;
-          }
-          setError(null);
-          setPreview(true);
-        }}
-      />
-      {preview && (
+  const repo = useAuthRepository();
+  const dispatch = useAppDispatch();
+  const action = useAsyncAction();
+  const projectId = route.params?.projectId ?? restored?.form?.projectId;
+  const project = useMemo(
+    () => projectFixtures.find(p => p.id === projectId),
+    [projectId],
+  );
+  const [id] = useState(() => restored?.id ?? localId());
+  const [form, setForm] = useState<QuoteFormData>(() => ({
+    ...emptyQuoteForm,
+    name: profile?.name ?? '',
+    email: profile?.email ?? '',
+    phone: profile?.phone ?? '',
+    solutionId: route.params?.solutionId ?? project?.solutionIds[0] ?? '',
+    projectId: project?.id ?? '',
+    ...restored?.form,
+  }));
+  const [step, setStep] = useState(restored?.step ?? 0);
+  const [dirty, setDirty] = useState(false);
+  const [finished, setFinished] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(Boolean(profile));
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
+  const owner = useRef(profile?.id);
+  useEffect(() => {
+    if (owner.current) return;
+    let active = true;
+    guestQuoteHandoff
+      .restore()
+      .then(value => {
+        if (active && value) {
+          setForm(value.form);
+          setStep(value.step);
+          setDirty(true);
+        }
+        if (active) setReady(true);
+      })
+      .catch(() => {
+        if (active) {
+          setError(
+            'Your guest draft could not be restored. Retry by reopening this screen.',
+          );
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [restoreAttempt]);
+  const sessionChanged = owner.current !== profile?.id;
+  usePreventRemove(dirty && !finished && !sessionChanged, ({ data }) => {
+    Alert.alert(
+      'Leave this request?',
+      'Unsaved changes will be discarded. Choose Stay to save a draft first.',
+      [
+        { text: 'Stay', style: 'cancel' },
+        {
+          text: 'Discard changes',
+          style: 'destructive',
+          onPress: () => navigation.dispatch(data.action),
+        },
+      ],
+    );
+  });
+  const update = useCallback((key: keyof QuoteFormData, value: string) => {
+    setForm(current => ({ ...current, [key]: value }));
+    setDirty(true);
+    setError(null);
+  }, []);
+  const selectSolution = useCallback(
+    (solutionId: string) => update('solutionId', solutionId),
+    [update],
+  );
+  function continueStep() {
+    const invalid = validateQuoteStep(form, step);
+    setError(invalid);
+    if (!invalid) setStep(step + 1);
+  }
+  const stickyContinue =
+    step === 0 && Boolean(form.solutionId) && ready && !sessionChanged;
+  function save(submit: boolean) {
+    if (action.busy || sessionChanged) return;
+    const invalid = submit ? validateQuote(form) : null;
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+    action.run(async () => {
+      const quote = submit
+        ? await repo.submitQuote(form, id)
+        : await repo.saveQuoteDraft(form, id, step);
+      setDirty(false);
+      if (submit) setFinished(quote.reference);
+      else
+        setError(
+          'Draft saved on this device. Continue here or find it in My Quotations.',
+        );
+    });
+  }
+  function authenticate(entry: 'Login' | 'SignUp') {
+    action.run(async () => {
+      await guestQuoteHandoff.save({ form, step });
+      setDirty(false);
+      dispatch(selectAuthEntry(entry));
+      await dispatch(setDemoAccess(null)).unwrap();
+    });
+  }
+  const field = (
+    key: keyof QuoteFormData,
+    label: string,
+    multiline = false,
+  ) => (
+    <QuoteField
+      key={key}
+      field={key}
+      label={label}
+      value={form[key]}
+      editable={!action.busy && !sessionChanged}
+      multiline={multiline}
+      onChange={update}
+    />
+  );
+  if (finished)
+    return (
+      <AuthFrame title="Request Saved">
+        <AppText variant="title">Your next idea starts here.</AppText>
         <Card>
-          <AppText variant="heading">Preview ready — not submitted</AppText>
-          <AppText>
-            {selected?.title} · {name}
-          </AppText>
-          <AppText muted>{message}</AppText>
-          <AppText variant="caption" muted>
-            To request an actual quotation, contact Champion Group using the
-            verified channels.
+          <AppText variant="heading">Submitted (Demo)</AppText>
+          <AppText selectable>{finished}</AppText>
+          <AppText muted>
+            Saved locally for demonstration. This request was not sent to
+            Champion Group.
           </AppText>
         </Card>
-      )}
-      {preview &&
-        !savedId &&
-        (profile ? (
-          <Button
-            label="Save Demo Quotation"
-            loading={action.busy}
-            onPress={() =>
-              action.run(async () => {
-                const draft = await repository.saveQuotation(
-                  {
-                    name,
-                    email: email.trim().toLowerCase(),
-                    phone,
-                    serviceId: solution,
-                    message,
-                    projectId: route.params?.projectId,
-                  },
-                  requestId,
-                );
-                setSavedId(draft.id);
-              })
-            }
+        <Button
+          label="View My Quotations"
+          onPress={() => navigation.replace('MyQuotations')}
+        />
+        <Button
+          label="Back to Home"
+          variant="secondary"
+          onPress={() => navigation.navigate('MainTabs', { screen: 'Home' })}
+        />
+      </AuthFrame>
+    );
+  return (
+    <AuthFrame
+      title="Get a Quote"
+      scrollKey={step}
+      onBack={navigation.goBack}
+      footer={
+        stickyContinue ? (
+          <View style={styles.footer}>
+            <View style={styles.footerContent}>
+              <Button
+                label="Continue"
+                disabled={action.busy}
+                onPress={continueStep}
+              />
+            </View>
+          </View>
+        ) : undefined
+      }
+    >
+      <AppText variant="caption" style={styles.accent}>
+        YOUR VISION. OUR EXPERTISE.
+      </AppText>
+      <View style={styles.progress}>
+        {steps.map((title, index) => (
+          <View
+            key={title}
+            style={[styles.segment, index <= step && styles.active]}
           />
-        ) : (
-          <GuestPrompt />
         ))}
-      {action.error && (
-        <AppText accessibilityRole="alert">{action.error}</AppText>
-      )}
-      {savedId && (
+      </View>
+      <AppText variant="caption" muted>
+        Step {step + 1} of 4
+      </AppText>
+      <AppText variant="title">{steps[step]}</AppText>
+      <AppText muted>
+        Demo only · Saved on this device. Nothing is sent to Champion Group.
+      </AppText>
+      {project && <AppText>Inspired by {project.title}</AppText>}
+      {!ready && !error && <AppText muted>Restoring your draft…</AppText>}
+      {!ready && error && (
         <Card>
-          <AppText accessibilityLiveRegion="polite" variant="heading">
-            Saved on this device
-          </AppText>
-          <AppText muted>
-            Local demo draft only — not submitted to Champion Group.
-          </AppText>
+          <AppText accessibilityRole="alert">{error}</AppText>
           <Button
-            label="View Saved Quotation"
-            onPress={() =>
-              navigation.navigate('QuotationDetails', { quotationId: savedId })
-            }
-          />
-          <Button
-            label="Start another draft"
-            variant="secondary"
+            label="Retry draft restoration"
             onPress={() => {
-              setSavedId(null);
-              setRequestId(localId());
-              setMessage('');
-              setPreview(false);
+              setError(null);
+              setRestoreAttempt(value => value + 1);
             }}
           />
         </Card>
       )}
-      <Button
-        label="Contact our team"
-        variant="secondary"
-        onPress={() => navigation.navigate('ContactUs')}
-      />
+      {sessionChanged ? (
+        <AppText accessibilityRole="alert">
+          Your account changed. Reopen this form from your account.
+        </AppText>
+      ) : (
+        ready && (
+          <>
+            {step === 0 && (
+              <SolutionChoices
+                selectedId={form.solutionId}
+                disabled={action.busy}
+                onSelect={selectSolution}
+              />
+            )}
+            {step === 1 && (
+              <>
+                {field('title', 'Project title')}
+                {field('description', 'Project description', true)}
+                {field('location', 'Project location')}
+                {field('budget', 'Estimated budget (optional)')}
+                {field(
+                  'completionDate',
+                  'Required completion date (YYYY-MM-DD, optional)',
+                )}
+                {field(
+                  'additional',
+                  'Additional requirements (optional)',
+                  true,
+                )}
+              </>
+            )}
+            {step === 2 && (
+              <>
+                {field('name', 'Full name')}
+                {field('company', 'Company name (optional)')}
+                {field('email', 'Email')}
+                {field('phone', 'Phone number')}
+                <AppText variant="label">Preferred contact method</AppText>
+                <View style={styles.methods}>
+                  {['Email', 'Phone', 'WhatsApp'].map(method => (
+                    <Button
+                      key={method}
+                      label={method}
+                      variant={
+                        form.contactMethod === method ? 'primary' : 'secondary'
+                      }
+                      onPress={() => update('contactMethod', method)}
+                      disabled={action.busy}
+                    />
+                  ))}
+                </View>
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <Card>
+                  <AppText variant="heading">Selected solution</AppText>
+                  <AppText>
+                    {
+                      solutionFixtures.find(s => s.id === form.solutionId)
+                        ?.title
+                    }
+                  </AppText>
+                  <Button
+                    label="Edit solution"
+                    variant="secondary"
+                    onPress={() => setStep(0)}
+                  />
+                </Card>
+                <Card>
+                  <AppText variant="heading">Project details</AppText>
+                  {(
+                    [
+                      'title',
+                      'description',
+                      'location',
+                      'budget',
+                      'completionDate',
+                      'additional',
+                    ] as const
+                  ).map(key => (
+                    <AppText key={key}>
+                      {
+                        {
+                          title: 'Title',
+                          description: 'Description',
+                          location: 'Location',
+                          budget: 'Budget',
+                          completionDate: 'Completion date',
+                          additional: 'Additional requirements',
+                        }[key]
+                      }
+                      : {form[key] || 'Not specified'}
+                    </AppText>
+                  ))}
+                  <Button
+                    label="Edit project"
+                    variant="secondary"
+                    onPress={() => setStep(1)}
+                  />
+                </Card>
+                <Card>
+                  <AppText variant="heading">Contact details</AppText>
+                  <AppText>
+                    {form.name} · {form.company || 'No company specified'}
+                  </AppText>
+                  <AppText>{form.email}</AppText>
+                  <AppText>{form.phone}</AppText>
+                  <AppText>Preferred contact: {form.contactMethod}</AppText>
+                  <Button
+                    label="Edit contact"
+                    variant="secondary"
+                    onPress={() => setStep(2)}
+                  />
+                </Card>
+              </>
+            )}
+            {(error || action.error) && (
+              <AppText accessibilityRole="alert" style={styles.accent}>
+                {action.error || error}
+              </AppText>
+            )}
+            {stickyContinue ? null : step < 3 ? (
+              <Button
+                label="Continue"
+                disabled={action.busy}
+                onPress={continueStep}
+              />
+            ) : (
+              profile && (
+                <Button
+                  label="Submit Request"
+                  loading={action.busy}
+                  onPress={() => save(true)}
+                />
+              )
+            )}
+            {step > 0 && (
+              <Button
+                label="Previous step"
+                variant="secondary"
+                disabled={action.busy}
+                onPress={() => {
+                  setStep(step - 1);
+                  setError(null);
+                }}
+              />
+            )}
+            {profile ? (
+              <Button
+                label="Save draft"
+                variant="secondary"
+                loading={action.busy}
+                onPress={() => save(false)}
+              />
+            ) : (
+              <Card>
+                <AppText variant="heading">
+                  Keep this request in your account
+                </AppText>
+                <AppText muted>
+                  Sign in to save or submit your demo quotation. Your entries
+                  will be preserved and restored after authentication.
+                </AppText>
+                <Button
+                  label="Login and keep draft"
+                  loading={action.busy}
+                  onPress={() => authenticate('Login')}
+                />
+                <Button
+                  label="Sign Up and keep draft"
+                  variant="secondary"
+                  disabled={action.busy}
+                  onPress={() => authenticate('SignUp')}
+                />
+              </Card>
+            )}
+          </>
+        )
+      )}
     </AuthFrame>
   );
 }
 const styles = StyleSheet.create({
-  notice: { color: colors.accentOnDark },
-  select: {
-    minHeight: 50,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    backgroundColor: colors.surface,
-    padding: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
+  footer: {
+    backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
-  choices: {
-    gap: 4,
-    padding: 8,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
+  footerContent: { width: '100%', maxWidth: 472, alignSelf: 'center' },
+  accent: { color: colors.accentOnDark },
+  progress: { flexDirection: 'row', gap: 6 },
+  segment: {
+    flex: 1,
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: 2,
   },
-  choice: { minHeight: 44, padding: 12, justifyContent: 'center' },
-  message: { minHeight: 112, textAlignVertical: 'top' },
+  active: { backgroundColor: colors.primary },
+  methods: { gap: 8 },
 });

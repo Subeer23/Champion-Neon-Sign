@@ -1,3 +1,4 @@
+import { useStackMotion } from '../../../app/navigation/useStackMotion';
 import { useAsyncAction as useDemoAction } from '../../../shared/hooks/useAsyncAction';
 import React, { useRef, useState } from 'react';
 import {
@@ -507,11 +508,14 @@ export function LoginSuccessScreen() {
   );
 }
 export function AuthNavigator() {
+  const motion = useStackMotion();
   const entry = useAppSelector(state => state.auth.entry);
   return (
     <Stack.Navigator
       initialRouteName={entry}
       screenOptions={{
+        ...motion,
+        statusBarStyle: 'light',
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
       }}

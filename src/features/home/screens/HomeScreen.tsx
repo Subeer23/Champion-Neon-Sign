@@ -4,14 +4,12 @@ import {
   StyleSheet,
   View,
   Pressable,
-  StatusBar,
   useWindowDimensions,
 } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
 import type { TabScreenProps } from '../../../app/navigation/types';
 import {
   AppText,
@@ -39,11 +37,15 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
     (available - 12 * (projectColumns - 1)) / projectColumns;
   const solutions = useGetSolutionsQuery();
   const projects = useGetProjectsQuery();
-  const focused = useIsFocused();
   return (
     <View style={styles.screen}>
-      {focused && <StatusBar barStyle="light-content" />}
-      <SafeAreaView edges={['top', 'left', 'right']}>
+      <View
+        style={{
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+      >
         <View style={styles.header}>
           <Pressable
             accessibilityRole="button"
@@ -63,7 +65,7 @@ export function HomeScreen({ navigation }: TabScreenProps<'Home'>) {
             <LineIcon name="user" color={colors.text} />
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
       <SafeAreaView edges={['left', 'right']} style={styles.flex}>
         <ScrollView
           showsVerticalScrollIndicator={false}

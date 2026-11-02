@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../tokens/colors';
 import { spacing } from '../tokens/spacing';
 import { AppText } from './AppText';
@@ -12,8 +12,18 @@ export function Header({
   title: string;
   onBack?: () => void;
 }) {
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={styles.surface}>
+    <View
+      style={[
+        styles.surface,
+        {
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
       <View style={styles.row}>
         <View style={styles.side}>
           {onBack && <IconButton label="Go back" onPress={onBack} />}
@@ -27,7 +37,7 @@ export function Header({
         </AppText>
         <View style={styles.side} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

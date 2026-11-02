@@ -31,7 +31,9 @@ export type RootStackParamList = {
   Testimonials: undefined;
   FAQs: undefined;
   ContactUs: undefined;
-  GetQuote: { solutionId?: string; projectId?: string } | undefined;
+  GetQuote:
+    | { solutionId?: string; projectId?: string; draftId?: string }
+    | undefined;
   GalleryViewer: { projectId: string; initialIndex?: number };
 };
 export type RootScreenProps<T extends keyof RootStackParamList> =

@@ -28,7 +28,14 @@ export const quoteSchema = quoteInputSchema.extend({
   id: z.string(),
   reference: z.string(),
   createdAt: z.string().datetime(),
-  status: z.literal('Local demo • Not submitted'),
+  status: z.enum([
+    'Local demo • Not submitted',
+    'Draft',
+    'Submitted (Demo)',
+    'Cancelled (Demo)',
+  ]),
+  form: z.record(z.string(), z.string()).optional(),
+  step: z.number().int().min(0).max(3).optional(),
 });
 export type DemoQuote = z.infer<typeof quoteSchema>;
 export const notificationSchema = z.object({

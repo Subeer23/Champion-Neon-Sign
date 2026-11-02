@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useSyncExternalStore,
   type PropsWithChildren,
@@ -25,4 +26,16 @@ export function useDemoSnapshot() {
     repository.getSnapshot,
     repository.getSnapshot,
   );
+}
+
+/** Select a stable field or item; selectors should not allocate new objects. */
+export function useDemoSelector<T>(
+  selector: (snapshot: import('../../account/domain/models').DemoSnapshot) => T,
+): T {
+  const repository = useAuthRepository();
+  const getSelected = useCallback(
+    () => selector(repository.getSnapshot()),
+    [repository, selector],
+  );
+  return useSyncExternalStore(repository.subscribe, getSelected, getSelected);
 }

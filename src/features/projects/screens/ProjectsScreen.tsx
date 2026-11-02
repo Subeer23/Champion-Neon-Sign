@@ -11,6 +11,7 @@ export function ProjectsScreen({ navigation }: TabScreenProps<'Projects'>) {
   const categories = useMemo(() => items.map(item => item.title), [items]);
   return (
     <CatalogList
+      onQuote={() => navigation.navigate('GetQuote')}
       items={items}
       categories={categories}
       loading={isLoading}

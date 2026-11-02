@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootScreenProps } from '../../../app/navigation/types';
 import { AppText, Button, Card } from '../../../design-system/components';
@@ -9,6 +9,7 @@ import { ContentMedia } from '../../../shared/components/ContentMedia';
 import {
   useAuthRepository,
   useDemoSnapshot,
+  useDemoSelector,
 } from '../../auth/data/AuthRepositoryProvider';
 import { useAsyncAction } from '../../../shared/hooks/useAsyncAction';
 import {
@@ -18,6 +19,7 @@ import {
 } from '../components/AccountPrimitives';
 import { useGetProjectsQuery } from '../../projects/state/projectsApi';
 import { QueryState } from '../../../shared/components/QueryState';
+import { projectFixtures } from '../../../mocks/fixtures/projects';
 import { solutionFixtures } from '../../../mocks/fixtures/solutions';
 const dateLabel = (value: string) => new Date(value).toLocaleDateString();
 function ListFrame<T>({
@@ -129,7 +131,8 @@ export function SavedProjectsScreen({
 export function MyQuotationsScreen({
   navigation,
 }: RootScreenProps<'MyQuotations'>) {
-  const { profile, quotations } = useDemoSnapshot();
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const quotations = useDemoSelector(snapshot => snapshot.quotations);
   if (!profile)
     return (
       <Screen>
@@ -154,7 +157,7 @@ export function MyQuotationsScreen({
       empty={
         <AccountEmpty
           title="Let’s start your next idea"
-          body="Your locally saved quotation drafts will appear here with their reference, service and date."
+          body="Your locally saved quotation requests will appear here with their reference, service and date."
         />
       }
       renderItem={q => (
@@ -168,7 +171,7 @@ export function MyQuotationsScreen({
           </AppText>
           <AppText muted>{q.status}</AppText>
           <Button
-            label={`View ${q.reference}`}
+            label="View demo"
             variant="secondary"
             onPress={() =>
               navigation.navigate('QuotationDetails', { quotationId: q.id })
@@ -183,8 +186,12 @@ export function QuotationDetailsScreen({
   route,
   navigation,
 }: RootScreenProps<'QuotationDetails'>) {
-  const { profile, quotations } = useDemoSnapshot();
-  const quote = quotations.find(q => q.id === route.params.quotationId);
+  const profile = useDemoSelector(snapshot => snapshot.profile?.id);
+  const quote = useDemoSelector(snapshot =>
+    snapshot.quotations.find(q => q.id === route.params.quotationId),
+  );
+  const repo = useAuthRepository();
+  const action = useAsyncAction();
   return (
     <Screen>
       {!profile ? (
@@ -208,18 +215,82 @@ export function QuotationDetailsScreen({
             <AppText muted>
               {new Date(quote.createdAt).toLocaleString()}
             </AppText>
-            <AppText>{quote.name}</AppText>
-            <AppText>{quote.email}</AppText>
-            <AppText>{quote.phone}</AppText>
+            <AppText>{quote.form?.name ?? quote.name}</AppText>
+            <AppText>{quote.form?.email ?? quote.email}</AppText>
+            <AppText>{quote.form?.phone ?? quote.phone}</AppText>
           </Card>
           <Card>
             <AppText variant="heading">Your project brief</AppText>
-            <AppText>{quote.message}</AppText>
+            <AppText>{quote.form?.title}</AppText>
+            {quote.projectId && (
+              <AppText>
+                Inspired by:{' '}
+                {projectFixtures.find(p => p.id === quote.projectId)?.title ??
+                  quote.projectId}
+              </AppText>
+            )}
+            <AppText>{quote.form?.description ?? quote.message}</AppText>
+            <AppText>
+              Location: {quote.form?.location || 'Not specified'}
+            </AppText>
+            <AppText>Budget: {quote.form?.budget || 'Not specified'}</AppText>
+            <AppText>
+              Completion: {quote.form?.completionDate || 'Not specified'}
+            </AppText>
+            <AppText>
+              Additional: {quote.form?.additional || 'Not specified'}
+            </AppText>
+            <AppText>Company: {quote.form?.company || 'Not specified'}</AppText>
+            <AppText>
+              Preferred contact: {quote.form?.contactMethod || 'Not specified'}
+            </AppText>
           </Card>
           <AppText muted>
-            This is a local demo draft, not a submitted request or a company
-            price quotation.
+            Saved locally for demonstration. This request was not sent to
+            Champion Group.
           </AppText>
+          {quote.status === 'Draft' && (
+            <Button
+              label="Continue editing draft"
+              onPress={() =>
+                navigation.navigate('GetQuote', { draftId: quote.id })
+              }
+            />
+          )}
+          {quote.status === 'Submitted (Demo)' && (
+            <Button
+              label="Cancel demo request"
+              variant="secondary"
+              loading={action.busy}
+              onPress={() => action.run(() => repo.cancelQuotation(quote.id))}
+            />
+          )}
+          <Button
+            label="Delete quotation"
+            variant="secondary"
+            loading={action.busy}
+            onPress={() =>
+              Alert.alert(
+                'Delete local quotation?',
+                'This removes the request from this demo account.',
+                [
+                  { text: 'Keep', style: 'cancel' },
+                  {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () =>
+                      action.run(async () => {
+                        await repo.deleteQuotation(quote.id);
+                        navigation.goBack();
+                      }),
+                  },
+                ],
+              )
+            }
+          />
+          {action.error && (
+            <AppText accessibilityRole="alert">{action.error}</AppText>
+          )}
           <Button
             label="Contact Champion Group"
             onPress={() => navigation.navigate('ContactUs')}

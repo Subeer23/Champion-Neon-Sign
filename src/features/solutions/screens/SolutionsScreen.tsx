@@ -6,6 +6,7 @@ export function SolutionsScreen({ navigation }: TabScreenProps<'Solutions'>) {
   const { data, isLoading, isError, refetch } = useGetSolutionsQuery();
   return (
     <CatalogList
+      onQuote={() => navigation.navigate('GetQuote')}
       items={data ?? []}
       loading={isLoading}
       error={isError}
