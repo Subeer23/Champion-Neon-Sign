@@ -16,6 +16,7 @@ export type RootStackParamList = {
   SolutionDetails: { solutionId: string };
   ProjectDetails: { projectId: string };
   AboutUs: undefined;
+  FounderJourney: undefined;
   More: undefined;
   Profile: undefined;
   EditProfile: undefined;

@@ -1,0 +1,13 @@
+{
+  "id": "shabbir-merchant",
+  "localFile": "shabbir-merchant.png",
+  "source": "Image supplied by the user in this conversation",
+  "providedOn": "2026-11-03",
+  "approval": "Explicit user instruction to save this exact image locally and use it as the founder portrait",
+  "upstreamCopyrightOwnership": "Not independently established; user-provided permission is recorded without claiming a public reuse licence",
+  "width": 408,
+  "height": 404,
+  "bytes": 230139,
+  "sha256": "3aec16183a5b9769930d3cd5ee67336e3cb8ea265eb34ad111af2004d7420948",
+  "modifications": "None; original attached PNG bytes preserved"
+}

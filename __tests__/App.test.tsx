@@ -1,3 +1,4 @@
+import { skipFounderPresentation } from '../src/test/skipFounderPresentation';
 /**
  * @format
  */
@@ -21,6 +22,7 @@ test('renders correctly', async () => {
   await ReactTestRenderer.act(async () => {
     jest.runOnlyPendingTimers();
   });
+  await skipFounderPresentation(renderer!);
   expect(renderer!.root.findByType(HomeScreen)).toBeDefined();
   await ReactTestRenderer.act(() => {
     renderer!.unmount();

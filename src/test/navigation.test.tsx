@@ -1,3 +1,5 @@
+import { skipFounderPresentation } from './skipFounderPresentation';
+import { FounderJourneyScreen } from '../features/founder/screens/FounderJourneyScreen';
 import React from 'react';
 import Renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
 import App from '../../App';
@@ -32,6 +34,7 @@ describe('real navigation tree', () => {
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
+    await skipFounderPresentation(renderer);
   });
   afterEach(async () => {
     await act(() => {
@@ -130,5 +133,19 @@ describe('real navigation tree', () => {
     }
     await press('Get a Quote');
     expect(renderer.root.findByType(GetQuoteScreen)).toBeDefined();
+  });
+  it('keeps Home free of the founder card and opens the manual journey from About', async () => {
+    expect(
+      renderer.root
+        .findAllByType(Button)
+        .some(item => item.props.label === 'Explore Founder Journey'),
+    ).toBe(false);
+    await press('Our story');
+    expect(renderer.root.findByType(AboutUsScreen)).toBeDefined();
+    await press('Explore Founder Journey');
+    const journey = renderer.root.findAllByType(FounderJourneyScreen).at(-1)!;
+    expect(journey.props.route.name).toBe('FounderJourney');
+    await press('Back');
+    expect(renderer.root.findByType(AboutUsScreen)).toBeDefined();
   });
 });

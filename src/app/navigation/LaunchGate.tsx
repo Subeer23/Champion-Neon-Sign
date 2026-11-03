@@ -1,3 +1,4 @@
+import { FounderCinematicScreen } from '../../features/founder/screens/FounderCinematicScreen';
 import { AuthNavigator } from '../../features/auth/screens/AuthScreens';
 import { Alert } from 'react-native';
 import {
@@ -13,6 +14,8 @@ import { LaunchReveal } from '../../features/onboarding/components/LaunchReveal'
 import { RootNavigator } from './RootNavigator';
 export const MIN_SPLASH_DURATION_MS = 3000;
 export function LaunchGate() {
+  const [founderFinished, setFounderFinished] = useState(false);
+  const finishFounder = useCallback(() => setFounderFinished(true), []);
   const [minimumDurationElapsed, setMinimumDurationElapsed] = useState(false);
   useEffect(() => {
     const timer = setTimeout(
@@ -66,6 +69,8 @@ export function LaunchGate() {
       />
     );
   }
+  if (!founderFinished)
+    return <FounderCinematicScreen onComplete={finishFounder} />;
   return (
     <LaunchReveal>
       {!completed ? (

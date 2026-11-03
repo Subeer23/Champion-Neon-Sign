@@ -1,3 +1,4 @@
+import { skipFounderPresentation } from './skipFounderPresentation';
 import { guestQuoteHandoff } from '../features/quote/state/guestQuoteHandoff';
 import React from 'react';
 import { Alert, TextInput } from 'react-native';
@@ -16,6 +17,7 @@ describe('demo authentication navigation', () => {
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
+    await skipFounderPresentation(renderer);
   }
   async function press(label: string) {
     const buttons = renderer.root

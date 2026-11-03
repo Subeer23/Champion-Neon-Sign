@@ -1,3 +1,4 @@
+import { FounderSpotlight } from '../../founder/components/FounderSpotlight';
 import { CinematicBackdrop } from '../../../shared/components/CinematicBackdrop';
 import { images } from '../../../assets/images';
 import React, { useState } from 'react';
@@ -47,6 +48,10 @@ export function AboutUsScreen({ navigation }: RootScreenProps<'AboutUs'>) {
         ))}
       </View>
       <AppText>{companyContent.introduction}</AppText>
+      <FounderSpotlight
+        about
+        onOpen={() => navigation.navigate('FounderJourney')}
+      />
       <Card>
         <AppText variant="heading">From concept to installation</AppText>
         <AppText muted>{companyContent.expertise}</AppText>

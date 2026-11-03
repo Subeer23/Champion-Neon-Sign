@@ -1,3 +1,4 @@
+import { FounderJourneyScreen } from '../../features/founder/screens/FounderJourneyScreen';
 import { useStackMotion } from './useStackMotion';
 import {
   EditProfileScreen,
@@ -151,6 +152,11 @@ export function RootNavigator() {
         name="AboutUs"
         component={AboutUsScreen}
         options={{ title: 'About Us' }}
+      />
+      <Stack.Screen
+        name="FounderJourney"
+        component={FounderJourneyScreen}
+        options={{ title: 'Founder Journey' }}
       />
       <Stack.Screen name="More" component={MoreScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />

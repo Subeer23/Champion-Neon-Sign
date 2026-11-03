@@ -1,3 +1,5 @@
+import { skipFounderPresentation } from './skipFounderPresentation';
+import { FounderCinematicScreen } from '../features/founder/screens/FounderCinematicScreen';
 import React from 'react';
 import { AccessibilityInfo, Animated } from 'react-native';
 import Renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
@@ -31,7 +33,8 @@ describe('Phase 2 launch and Home experience', () => {
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
-    // Queries mount after the entrance animation completes.
+    await skipFounderPresentation(renderer);
+    // Queries mount after the presentation has been skipped.
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
@@ -62,6 +65,7 @@ describe('Phase 2 launch and Home experience', () => {
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
+    await skipFounderPresentation(renderer);
   }
   afterEach(async () => {
     await act(() => {
@@ -86,6 +90,8 @@ describe('Phase 2 launch and Home experience', () => {
       jest.advanceTimersByTime(1);
     });
     expect(renderer.root.findAllByType(SplashScreen).length).toBe(0);
+    expect(renderer.root.findAllByType(FounderCinematicScreen)).toHaveLength(1);
+    await skipFounderPresentation(renderer);
     expect(renderer.root.findAllByType(OnboardingScreen).length).toBe(1);
   });
   it('does not discard the photographic splash when preferences resolve before its entrance', async () => {
@@ -110,6 +116,7 @@ describe('Phase 2 launch and Home experience', () => {
       await act(async () => {
         finish?.({ finished: true });
       });
+      await skipFounderPresentation(renderer);
       expect(renderer.root.findAllByType(OnboardingScreen).length).toBe(1);
     } finally {
       timing.mockRestore();
@@ -133,6 +140,7 @@ describe('Phase 2 launch and Home experience', () => {
     await act(async () => {
       resolve(false);
     });
+    await skipFounderPresentation(renderer);
     expect(renderer.root.findByType(OnboardingScreen)).toBeDefined();
   });
   it('walks through all three pages, persists completion, and skips onboarding on relaunch', async () => {

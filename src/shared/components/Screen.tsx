@@ -1,10 +1,15 @@
+import { RevealScrollView } from './ScrollReveal';
 import React, { useContext, type PropsWithChildren } from 'react';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../design-system/tokens/colors';
 import { spacing } from '../../design-system/tokens/spacing';
-export function Screen({ children }: PropsWithChildren) {
+export function Screen({
+  children,
+  revealOnScroll = false,
+}: PropsWithChildren<{ revealOnScroll?: boolean }>) {
+  const Content = revealOnScroll ? RevealScrollView : ScrollView;
   const tabBarHeight = useContext(BottomTabBarHeightContext);
   return (
     <SafeAreaView
@@ -15,7 +20,7 @@ export function Screen({ children }: PropsWithChildren) {
           : ['left', 'right']
       }
     >
-      <ScrollView
+      <Content
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
@@ -25,7 +30,7 @@ export function Screen({ children }: PropsWithChildren) {
         contentContainerStyle={styles.content}
       >
         {children}
-      </ScrollView>
+      </Content>
     </SafeAreaView>
   );
 }

@@ -1,5 +1,6 @@
 import type { ImageSourcePropType } from 'react-native';
 export const images = {
+  'shabbir-merchant': require('./shabbir-merchant.png'),
   'solution-signage': require('./solution-signage.jpg'),
   'testimonial-1': require('./testimonial-1.png'),
   'testimonial-2': require('./testimonial-2.png'),

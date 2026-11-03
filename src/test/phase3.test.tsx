@@ -1,3 +1,4 @@
+import { skipFounderPresentation } from './skipFounderPresentation';
 import React from 'react';
 import Renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
 import { FlatList, Linking } from 'react-native';
@@ -123,6 +124,7 @@ describe('Phase 3 navigation and interaction', () => {
     await act(async () => {
       jest.runOnlyPendingTimers();
     });
+    await skipFounderPresentation(renderer);
   }
   async function action(label: string) {
     const target = renderer.root.findAllByProps({
